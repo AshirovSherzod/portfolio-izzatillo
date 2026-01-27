@@ -7,27 +7,30 @@ import { LanSelect } from '../LanSelect/LanSelect';
 function Header() {
     const { t } = useTranslation();
     return (
-        <header className='container header'>
-            <div className="header-left">
-                <div className="header-left__logo">
-                    <img src={logo} alt="" />
+        <div className="container">
+
+            <header className='header'>
+                <div className="header-left">
+                    <div className="header-left__logo">
+                        <img src={logo} alt="" />
+                    </div>
+                    <ul>
+                        <li>{t("home")}</li>
+                        <li>{t("about")}</li>
+                        <li>{t("services")}</li>
+                        <li>{t("portfolio")}</li>
+                        <li>{t("contact")}</li>
+                    </ul>
                 </div>
-                <ul>
-                    <li>{t("home")}</li>
-                    <li>{t("about")}</li>
-                    <li>{t("services")}</li>
-                    <li>{t("portfolio")}</li>
-                    <li>{t("contact")}</li>
-                </ul>
-            </div>
-            <div className="header-right">
-                <LanSelect />
-                <button>Breaf</button>
-                
+                <div className="header-right">
+                    <LanSelect />
+                    <button>Breaf</button>
 
 
-            </div>
-        </header>
+
+                </div>
+            </header>
+        </div>
     )
 }
 

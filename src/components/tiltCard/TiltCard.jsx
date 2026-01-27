@@ -5,8 +5,8 @@ export default function TiltCard({ children, className = "" }) {
     const ref = useRef(null);
     const [isHover, setIsHover] = useState(false);
 
-    const maxTilt = 12; // gradus
-    const lift = 6;     // px
+    const maxTilt = 12;
+    const lift = 6;
     const perspective = 900;
 
     const handleMouseMove = (e) => {
