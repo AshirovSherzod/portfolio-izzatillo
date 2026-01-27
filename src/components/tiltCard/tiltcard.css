@@ -2,19 +2,20 @@
   position: relative;
   transform-style: preserve-3d;
   will-change: transform;
-  transition: transform 240ms ease, box-shadow 240ms ease;
+  transition:
+    transform 240ms ease,
+    box-shadow 240ms ease;
 
   border-radius: 16px;
   overflow: hidden;
   background: rgba(3, 27, 27, 0.75);
   border: 2px solid rgba(0, 255, 150, 0.2);
   color: #fff;
-
-  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
 .tilt-card.is-hover {
-  box-shadow: 0 22px 60px rgba(0, 0, 0, .55);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
 }
 
 .tilt-card::after {
@@ -25,8 +26,6 @@
   pointer-events: none;
   opacity: 0;
   transition: opacity 160ms ease;
-
-
 }
 
 .tilt-card.is-hover::after {

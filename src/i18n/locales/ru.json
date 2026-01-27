@@ -1,12 +1,11 @@
 {
-    "home": "Главная",
-    "about": "Обо мне",
-    "services": "Услуги",
-    "portfolio": "Портфолио",
-    "contact": "Связаться",
-    "breaf": "Breaf",
-    "hero-title": "Визуальный ",
-    "designer": "дизайнер",
-    "hero-desc": "Графика, веб (UI/UX), моушн и 3D"
-
+  "home": "Главная",
+  "about": "Обо мне",
+  "services": "Услуги",
+  "portfolio": "Портфолио",
+  "contact": "Связаться",
+  "breaf": "Breaf",
+  "hero-title": "Визуальный ",
+  "designer": "дизайнер",
+  "hero-desc": "Графика, веб (UI/UX), моушн и 3D"
 }

@@ -1,12 +1,11 @@
 {
-    "home": "Home",
-    "about": "About Me",
-    "services": "Services",
-    "portfolio": "Portfolio",
-    "contact": "Contact Me",
-    "breaf": "Breaf",
-    "hero-title": "A visual-driven",
-    "designer": "designer",
-    "hero-desc": "Graphic, Web (UI/UX), Motion & 3D"
-    
+  "home": "Home",
+  "about": "About Me",
+  "services": "Services",
+  "portfolio": "Portfolio",
+  "contact": "Contact Me",
+  "breaf": "Breaf",
+  "hero-title": "A visual-driven",
+  "designer": "designer",
+  "hero-desc": "Graphic, Web (UI/UX), Motion & 3D"
 }
