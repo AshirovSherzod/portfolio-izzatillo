@@ -5,6 +5,7 @@ import Breaf from "./pages/breaf/Breaf";
 import Header from "./components/header/Header";
 
 function App() {
+  console.log("Salom");
   return (
     <>
       <Header />
