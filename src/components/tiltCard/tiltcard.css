@@ -12,22 +12,44 @@
   border: 2px solid rgba(0, 255, 150, 0.2);
   color: #fff;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  /* default qiymatlar (hover bo'lmagan payt) */
+  --px: 0.5;
+  --py: 0.5;
+  --rx: 0;
+  --ry: 0;
 }
 
 .tilt-card.is-hover {
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
 }
 
-.tilt-card::after {
-  content: "";
+/* Text layer */
+.tilt-text {
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 160ms ease;
+  left: 16px;
+  top: 16px;
+
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  transform-style: preserve-3d;
+
+  /* hover bo'lmagan payt */
+  transform: translateZ(0px) translateX(0px) translateY(0px);
+  transition:
+    transform 200ms ease,
+    opacity 200ms ease;
 }
 
-.tilt-card.is-hover::after {
-  opacity: 1;
+/* Mana shu joy: card tilt bo'lganda text ham “3D” bo'lib yuradi */
+.tilt-card.is-hover .tilt-text {
+  /* kursorga qarab -1..1 ga aylantiramiz */
+  --dx: calc((var(--px) - 0.5) * 2);
+  --dy: calc((var(--py) - 0.5) * 2);
+
+  /* depth + parallax */
+  transform: translateZ(70px) translateX(calc(var(--dx) * 16px))
+    translateY(calc(var(--dy) * 12px));
 }

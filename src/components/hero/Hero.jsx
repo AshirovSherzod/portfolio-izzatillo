@@ -19,10 +19,13 @@ function Hero() {
           </div>
         </div>
         <div className="hero-right">
-          <TiltCard>
-            <div className="hero-right__card">
-              <img src={person} alt="" />
-            </div>
+          <TiltCard className="card">
+            <img
+              src={person}
+              alt=""
+              style={{ width: 300, height: 320, objectFit: "cover" }}
+            />
+            <div className="tilt-text">Jamolitdinov - Dizayner</div>
           </TiltCard>
         </div>
       </section>

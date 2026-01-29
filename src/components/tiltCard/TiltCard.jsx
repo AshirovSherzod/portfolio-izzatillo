@@ -17,16 +17,26 @@ export default function TiltCard({ children, className = "" }) {
     const x = e.clientX - r.left;
     const y = e.clientY - r.top;
 
-    const px = (x / r.width) * 2 - 1;
-    const py = (y / r.height) * 2 - 1;
+    const px = x / r.width; // 0..1
+    const py = y / r.height; // 0..1
 
-    const rotY = px * maxTilt;
-    const rotX = -py * maxTilt;
+    const nx = px * 2 - 1; // -1..1
+    const ny = py * 2 - 1; // -1..1
+
+    const rotY = nx * maxTilt;
+    const rotX = -ny * maxTilt;
 
     el.style.transform = `perspective(${perspective}px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-${lift}px)`;
 
-    el.style.setProperty("--mx", `${(x / r.width) * 100}%`);
-    el.style.setProperty("--my", `${(y / r.height) * 100}%`);
+    // OLD (qolaversin)
+    el.style.setProperty("--mx", `${px * 100}%`);
+    el.style.setProperty("--my", `${py * 100}%`);
+
+    // NEW (text parallax uchun)
+    el.style.setProperty("--px", px); // 0..1 (son)
+    el.style.setProperty("--py", py); // 0..1 (son)
+    el.style.setProperty("--rx", rotX); // deg uchun son
+    el.style.setProperty("--ry", rotY); // deg uchun son
   };
 
   const handleEnter = () => {
