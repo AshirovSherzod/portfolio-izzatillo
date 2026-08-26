@@ -1,15 +1,19 @@
-import { useRef, useState } from "react";
-import "./tiltcard.css";
+import { useRef, useState, type MouseEvent, type ReactNode } from "react";
 
-export default function TiltCard({ children, className = "" }) {
-  const ref = useRef(null);
+type TiltCardProps = {
+  children: ReactNode;
+  className?: string;
+};
+
+export default function TiltCard({ children, className = "" }: TiltCardProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const [isHover, setIsHover] = useState(false);
 
   const maxTilt = 12;
   const lift = 6;
   const perspective = 900;
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     const el = ref.current;
     if (!el) return;
 
@@ -33,10 +37,10 @@ export default function TiltCard({ children, className = "" }) {
     el.style.setProperty("--my", `${py * 100}%`);
 
     // NEW (text parallax uchun)
-    el.style.setProperty("--px", px); // 0..1 (son)
-    el.style.setProperty("--py", py); // 0..1 (son)
-    el.style.setProperty("--rx", rotX); // deg uchun son
-    el.style.setProperty("--ry", rotY); // deg uchun son
+    el.style.setProperty("--px", String(px)); // 0..1 (son)
+    el.style.setProperty("--py", String(py)); // 0..1 (son)
+    el.style.setProperty("--rx", String(rotX)); // deg uchun son
+    el.style.setProperty("--ry", String(rotY)); // deg uchun son
   };
 
   const handleEnter = () => {
@@ -57,7 +61,9 @@ export default function TiltCard({ children, className = "" }) {
   return (
     <div
       ref={ref}
-      className={`tilt-card ${isHover ? "is-hover" : ""} ${className}`}
+      className={`tilt-card overflow-hidden rounded-2xl border-2 border-neon/20 bg-ink/75 text-white ${
+        isHover ? "is-hover" : ""
+      } ${className}`}
       onMouseEnter={handleEnter}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleLeave}

@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Migratsiyadan oldingi kod nusxasi (lokal, git tarixida allaqachon bor)
+backup

@@ -1,66 +1,100 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
 
-* {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  box-sizing: border-box;
-  text-decoration: none;
-  font-family: "Montserrat", sans-serif;
+@theme {
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
+
+  --color-neon: #00ffa3;
+  --color-ink: #031b1b;
+
+  --color-glass: rgba(255, 255, 255, 0.068);
+  --color-glass-border: rgba(255, 255, 255, 0.16);
 }
 
-a {
-  color: inherit;
-  transition: all 0.3s ease;
+/* Sayt fonini (gradient + grid overlay) Tailwind utility bilan yozib bo'lmaydi,
+   shuning uchun base layer'da qoldirilgan. */
+@layer base {
+  body {
+    position: relative;
+    min-height: 100dvh;
+    background:
+      radial-gradient(
+        circle at top right,
+        rgba(0, 255, 150, 0.5),
+        transparent 40%
+      ),
+      radial-gradient(
+        circle at bottom left,
+        rgba(0, 255, 150, 0.4),
+        transparent 45%
+      ),
+      linear-gradient(180deg, #031b1b 0%, #000000 50%, #031b1b 100%);
+  }
+
+  body::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0, 255, 150, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 255, 150, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    -webkit-mask-image: radial-gradient(
+      circle at center,
+      black 45%,
+      transparent 85%
+    );
+    mask-image: radial-gradient(circle at center, black 45%, transparent 85%);
+  }
+
+  a {
+    color: inherit;
+    transition: all 0.3s ease;
+  }
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-body {
-  position: relative;
-  overflow: hidden;
-  margin: 0;
-  min-height: 100vh;
-  background:
-    radial-gradient(
-      circle at top right,
-      rgba(0, 255, 150, 0.5),
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at bottom left,
-      rgba(0, 255, 150, 0.4),
-      transparent 45%
-    ),
-    linear-gradient(180deg, #031b1b 0%, #000000 50%, #031b1b 100%);
-}
-
-body::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(0, 255, 150, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 150, 0.08) 1px, transparent 1px);
-
-  background-size: 24px 24px;
-  -webkit-mask-image: radial-gradient(
-    circle at center,
-    black 45%,
-    transparent 85%
-  );
-  mask-image: radial-gradient(circle at center, black 45%, transparent 85%);
-}
-
-.glass-effect {
-  background: rgba(255, 255, 255, 0.068);
+/* Loyihada qayta-qayta ishlatiladigan "shisha" effekti */
+@utility glass {
+  background: var(--color-glass);
   backdrop-filter: blur(28px) saturate(170%);
-  -webkit-backdrop-filter: blur(18px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 10px;
+  border: 1px solid var(--color-glass-border);
+}
+
+/* 3D tilt kartochka: CSS o'zgaruvchilarga (--px/--py) bog'liq bo'lgani uchun
+   utility'ga aylantirib bo'lmaydi. */
+@layer components {
+  .tilt-card {
+    position: relative;
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition:
+      transform 240ms ease,
+      box-shadow 240ms ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+    --px: 0.5;
+    --py: 0.5;
+    --rx: 0;
+    --ry: 0;
+  }
+
+  .tilt-card.is-hover {
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
+  }
+
+  .tilt-text {
+    transform-style: preserve-3d;
+    transform: translateZ(0px) translateX(0px) translateY(0px);
+    transition:
+      transform 200ms ease,
+      opacity 200ms ease;
+  }
+
+  .tilt-card.is-hover .tilt-text {
+    --dx: calc((var(--px) - 0.5) * 2);
+    --dy: calc((var(--py) - 0.5) * 2);
+    transform: translateZ(70px) translateX(calc(var(--dx) * 16px))
+      translateY(calc(var(--dy) * 12px));
+  }
 }
