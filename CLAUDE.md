@@ -63,6 +63,8 @@ Project titles are **not** in the locale files. They live in the data entry as a
 
 Category labels resolve as ``t(`cat-${category}`)``, so every member of `PROJECT_CATEGORIES` needs a matching `cat-*` key in all three locales — TypeScript catches a missing one because template literal types distribute over the union.
 
+The grid is a bento layout: every fifth tile spans 2×2 with `grid-flow-row-dense` filling the gaps. Which tile is large is derived from its index **within the filtered list**, not stored per project, so switching filters can never leave holes — a `featured: true` on an entry overrides it when a specific project should always lead. Cards are absolutely positioned inside their tile, so the grid must always set an explicit `auto-rows-*` height, including at the mobile single-column breakpoint.
+
 `cover` and `images` are optional. [ProjectImage](src/components/portfolio/ProjectImage.tsx) renders a placeholder when a path is missing _or_ when the file 404s (`onError`), so a half-filled data file never breaks the grid. It tracks the failed URL rather than a boolean so the state resets on its own when `src` changes — resetting it in an effect trips the `react-hooks/set-state-in-effect` lint rule.
 
 ### Routing and scroll navigation

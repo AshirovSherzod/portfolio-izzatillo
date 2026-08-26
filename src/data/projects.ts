@@ -20,6 +20,11 @@ export type Project = {
   year?: number;
   /** Behance / Dribbble / Instagram havolasi */
   link?: string;
+  /**
+   * Gridda katta plitka bo'lib ko'rinsin. Berilmasa, joylashuviga qarab
+   * avtomatik tanlanadi — shunda filtr o'zgarganda ham grid teshiksiz qoladi.
+   */
+  featured?: boolean;
 };
 
 /**

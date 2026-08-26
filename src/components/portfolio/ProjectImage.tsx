@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { ProjectCategory } from "../../data/projects";
 
 type ProjectImageProps = {
   src?: string;
   alt: string;
-  category: ProjectCategory;
   className?: string;
 };
 
@@ -13,12 +11,7 @@ type ProjectImageProps = {
  * Loyiha rasmi. Rasm hali qo'shilmagan yoki yo'l noto'g'ri bo'lsa,
  * layoutni buzmasdan placeholder ko'rsatadi.
  */
-function ProjectImage({
-  src,
-  alt,
-  category,
-  className = "",
-}: ProjectImageProps) {
+function ProjectImage({ src, alt, className = "" }: ProjectImageProps) {
   const { t } = useTranslation();
 
   // Qaysi yo'l yuklanmaganini saqlaymiz — shunda src o'zgarganda
@@ -29,12 +22,11 @@ function ProjectImage({
   if (!src || hasFailed) {
     return (
       <div
-        className={`flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-neon/10 to-transparent text-center ${className}`}
+        className={`flex items-center justify-center bg-[radial-gradient(circle_at_30%_20%,rgba(0,255,163,0.14),transparent_60%)] ${className}`}
       >
-        <span className="text-xs tracking-[0.2em] text-neon/70 uppercase">
-          {t(`cat-${category}`)}
+        <span className="rounded-full border border-white/10 px-3 py-1 text-xs tracking-wider text-white/35">
+          {t("project-soon")}
         </span>
-        <span className="text-sm text-white/40">{t("project-soon")}</span>
       </div>
     );
   }

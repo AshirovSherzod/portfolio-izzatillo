@@ -9,6 +9,19 @@
 
   --color-glass: rgba(255, 255, 255, 0.068);
   --color-glass-border: rgba(255, 255, 255, 0.16);
+
+  --animate-fade-up: fade-up 450ms ease-out both;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
 }
 
 /* Sayt fonini (gradient + grid overlay) Tailwind utility bilan yozib bo'lmaydi,
@@ -51,6 +64,18 @@
   a {
     color: inherit;
     transition: all 0.3s ease;
+  }
+
+  /* Animatsiyani kamaytirishni so'ragan foydalanuvchilar uchun */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

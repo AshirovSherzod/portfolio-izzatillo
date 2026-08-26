@@ -70,7 +70,6 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
         <ProjectImage
           src={gallery[activeIndex]}
           alt={title}
-          category={project.category}
           className="h-[240px] w-full rounded-lg sm:h-[380px]"
         />
 
@@ -86,12 +85,7 @@ function ProjectModal({ project, onClose }: ProjectModalProps) {
                   index === activeIndex ? "border-neon" : "border-transparent"
                 }`}
               >
-                <ProjectImage
-                  src={src}
-                  alt=""
-                  category={project.category}
-                  className="h-full w-full"
-                />
+                <ProjectImage src={src} alt="" className="h-full w-full" />
               </button>
             ))}
           </div>
