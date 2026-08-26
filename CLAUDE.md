@@ -55,25 +55,32 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 [src/i18n/i18next.d.ts](src/i18n/i18next.d.ts) augments i18next's `CustomTypeOptions` so `t()` keys are type-checked against `uz.json`. **Consequence: `uz.json` is the source of truth for translation keys.** Adding a key to `en.json` alone will not typecheck; add it to `uz.json` first, then mirror it into `en.json` and `ru.json`.
 
-### Routing
+### Routing and scroll navigation
 
-[App.tsx](src/App.tsx) renders `Header`, a `<Routes>` block (`/` → Home, `/breaf` → Breaf), then `Footer`. Home composes the page sections in order: Hero, About, Services, Portfolio, Contact.
+[App.tsx](src/App.tsx) renders `ScrollManager`, `Header`, a `<Routes>` block (`/` → Home, `/brief` → Brief), then `Footer`. Home composes the page sections in order: Hero, About, Services, Portfolio, Contact.
+
+Header nav targets the on-page sections listed in [src/lib/sections.ts](src/lib/sections.ts) — that `SECTIONS` array is what the nav is generated from, and each id must match both a section `id` attribute and a translation key. Adding a section means touching the array, the component's `id`, and all three locale files.
+
+Cross-page navigation ("Services" clicked while on `/brief`) works through a **module-level `pendingSection` variable**, not router state. `useSectionNav` sets it and navigates; `ScrollManager` in App consumes it on the next pathname change and scrolls there, otherwise scrolls to top. Router state was tried first and does not work here: clearing the state after scrolling re-fires the effect and yanks the page back to the top mid-scroll.
+
+`ScrollManager` relies on effects running after DOM commit, so the target section exists by the time it looks it up. Sections carry `scroll-mt-28` to clear the sticky header.
 
 ## Current state — much of the site is unbuilt
 
-Only **Header**, **Hero**, **About**, **LanSelect** and **TiltCard** are implemented. These are stubs that render nothing but their own name:
+Only **Header** (with a mobile menu), **Hero**, **About**, **LanSelect** and **TiltCard** are implemented. These are stubs that render nothing but their own name:
 
-- `Services.tsx`, `Portfolio.tsx`, `Contact.tsx`, `Footer.tsx`
-- `pages/breaf/Breaf.tsx` (the whole route)
+- `Services.tsx`, `Portfolio.tsx`, `Contact.tsx` — these render only their own name, but they do carry the section `id` and spacing the nav depends on, so keep those when filling them in
+- `Footer.tsx`
+- `pages/brief/Brief.tsx` (the whole route)
 
 Known gaps, in case they come up:
 
-- **No responsive design at all** — there is not a single breakpoint (`sm:` / `md:` / `lg:`) in the codebase. Fixed widths like `w-1/2` and `w-[30%]` break on mobile.
-- **No interactive navigation** — header nav items are plain `<li>` elements, and the Hero/Header buttons have no `onClick` or `Link`.
-- **Language does not persist** — `LanSelect` writes the choice to `localStorage` under `"lang"`, but `i18n/index.ts` hardcodes `lng: "uz"` and never reads it back.
+- **The stub sections have no responsive work yet.** Header, Hero and About are done (`sm:` / `lg:` breakpoints, `lg:` is where the desktop nav appears); follow the same pattern when filling in the others.
 - **No 404 route** and no SEO/Open Graph meta tags.
 - `public/brands/` holds ten client logos (Uzum, Uzinfocom, and others) that nothing in the code references yet — intended for an unbuilt brands/clients section.
-- "Breaf" is a misspelling of "Brief" that runs through the route path, filenames and i18n keys.
+- **About's copy is hardcoded Uzbek JSX**, so EN/RU visitors still read Uzbek there.
+- The Resume download button in About has no PDF behind it and no `onClick`.
+- `TiltCard` is mouse-only — no touch handlers, and `prefers-reduced-motion` is not honoured.
 
 ## Repo conventions
 

@@ -4,23 +4,23 @@ import { MdOutlineFileDownload } from "react-icons/md";
 
 function About() {
   return (
-    <div className="mx-auto w-full max-w-[1200px] px-5">
-      <section className="glass flex gap-5 rounded-[10px] p-[25px] text-white">
-        <div className="w-1/2">
-          <TiltCard>
+    <div id="about" className="mx-auto w-full max-w-[1200px] scroll-mt-28 px-5">
+      <section className="glass flex flex-col gap-8 rounded-[10px] p-5 text-white sm:p-[25px] lg:flex-row lg:gap-5">
+        <div className="flex w-full justify-center lg:w-1/2">
+          <TiltCard className="w-full max-w-[300px]">
             <img
               src={person}
-              alt=""
-              className="h-[320px] w-[300px] object-cover"
+              alt="Jamolitdinov Izzatillo"
+              className="h-[280px] w-full object-cover sm:h-[320px]"
             />
-            <div className="tilt-text absolute top-4 left-4 rounded-full bg-black/35 px-3.5 py-2.5 backdrop-blur-[10px]">
+            <div className="tilt-text absolute top-4 left-4 rounded-full bg-black/35 px-3.5 py-2.5 text-sm backdrop-blur-[10px]">
               Jamolitdinov - Dizayner
             </div>
           </TiltCard>
         </div>
 
-        <div className="flex w-1/2 flex-col gap-5">
-          <h2>Jamolitdinov Izzatillo</h2>
+        <div className="flex w-full flex-col gap-5 lg:w-1/2">
+          <h2 className="text-2xl font-bold">Jamolitdinov Izzatillo</h2>
           <p>
             Man Jamolitdinov Izzatilloh - vizual orqali fikrni yetkazadigan
             grafik dizaynerman. Graphic, Web (UI/UX), Motion va 3D dizayn

@@ -55,13 +55,15 @@ src/
 ├── App.tsx               # Header + Routes + Footer
 ├── index.css             # The single CSS file (Tailwind + design tokens)
 ├── assets/               # Images and logo
+├── hooks/                # useDismiss, useSectionNav
+├── lib/                  # sections.ts — nav sections + scroll helpers
 ├── i18n/
 │   ├── index.ts          # i18next setup, Language type
 │   ├── i18next.d.ts      # Type-safe t() keys
 │   └── locales/          # uz.json, en.json, ru.json
 ├── pages/
 │   ├── home/             # Landing page (composes the sections)
-│   └── breaf/            # Brief page
+│   └── brief/            # Brief page
 └── components/
     ├── header/           # Navigation + language switcher
     ├── hero/             # Hero section
@@ -114,23 +116,25 @@ If a key is missing from `uz.json`, TypeScript will report an error.
 
 Done:
 
-- [x] Header (navigation, logo, language switcher)
+- [x] Header — sticky, with a mobile burger menu
 - [x] Hero section
 - [x] About section
 - [x] 3D tilt card effect
 - [x] UZ / EN / RU translations (core keys)
+- [x] Responsive layout for the sections that exist
+- [x] Working navigation — smooth scroll to sections, and routing to `/brief`
+- [x] Language persists across reloads (`localStorage`, then browser language)
 
 Not built yet:
 
 - [ ] Services section
 - [ ] Portfolio gallery
-- [ ] Contact form
+- [ ] Contact section and form
 - [ ] Footer
-- [ ] Breaf (`/breaf`) page
+- [ ] Brief (`/brief`) page
 - [ ] Brands section (the logos in `public/brands/` are unused so far)
-- [ ] Responsive design (no breakpoints yet)
-- [ ] Working navigation buttons (scroll / routing)
-- [ ] Restoring the selected language from `localStorage`
+- [ ] Resume/CV download (the button exists, the PDF does not)
+- [ ] Full translations — the About copy is still hardcoded Uzbek
 - [ ] 404 page and SEO meta tags
 
 ## Notes
