@@ -13,8 +13,17 @@ type Filter = ProjectCategory | "all";
 
 const FILTERS: Filter[] = ["all", ...PROJECT_CATEGORIES];
 
-/** Har beshinchi plitka katta bo'ladi — grid bir xil qutilar bo'lib qolmaydi. */
-const FEATURED_EVERY = 5;
+/**
+ * Uch ustunli gridda har bir ustun turlicha pastga suriladi — diagonal ritm
+ * hosil bo'ladi. Bu `translate` bo'lgani uchun layoutga tegmaydi: kartochkalar
+ * bir xil o'lchamda qoladi va gridda hech qachon bo'shliq paydo bo'lmaydi.
+ * Tailwind klass nomlarini matn sifatida topishi uchun to'liq yozilgan.
+ */
+const COLUMN_OFFSETS = [
+  "lg:translate-y-0",
+  "lg:translate-y-14",
+  "lg:translate-y-7",
+];
 
 function Portfolio() {
   const { t } = useTranslation();
@@ -73,16 +82,16 @@ function Portfolio() {
         <div
           // filter o'zgarganda grid qayta yig'iladi va animatsiya boshidan ketadi
           key={filter}
-          className="mt-8 grid auto-rows-[240px] grid-flow-row-dense grid-cols-1 gap-4 sm:auto-rows-[190px] sm:grid-cols-2 lg:auto-rows-[200px] lg:grid-cols-3"
+          className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 lg:pb-14"
         >
           {visibleProjects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              index={index}
-              isFeatured={project.featured ?? index % FEATURED_EVERY === 0}
-              onOpen={setOpenProject}
-            />
+            <div key={project.id} className={COLUMN_OFFSETS[index % 3]}>
+              <ProjectCard
+                project={project}
+                index={index}
+                onOpen={setOpenProject}
+              />
+            </div>
           ))}
         </div>
       )}
