@@ -55,7 +55,7 @@ src/
 ├── App.tsx               # Header + Routes + Footer
 ├── index.css             # The single CSS file (Tailwind + design tokens)
 ├── assets/               # Images and logo
-├── data/                 # projects.ts — portfolio entries
+├── data/                 # projects, services, brands, contact
 ├── hooks/                # useDismiss, useSectionNav, useBodyScrollLock
 ├── lib/                  # sections.ts — nav sections + scroll helpers
 ├── i18n/
@@ -66,6 +66,7 @@ src/
 │   ├── home/             # Landing page (composes the sections)
 │   └── brief/            # Brief page
 └── components/
+    ├── brands/           # Client logo marquee
     ├── header/           # Navigation + language switcher
     ├── hero/             # Hero section
     ├── about/            # About me
@@ -126,13 +127,15 @@ Done:
 - [x] Working navigation — smooth scroll to sections, and routing to `/brief`
 - [x] Language persists across reloads (`localStorage`, then browser language)
 - [x] Portfolio grid with category filters and a project modal
+- [x] Services section
+- [x] Brands marquee
+- [x] Footer
 
 Not built yet:
 
 - [ ] Real project data (`src/data/projects.ts` currently holds placeholder examples)
-- [ ] Services section
 - [ ] Contact section and form
-- [ ] Footer
+- [ ] Real contact details (`src/data/contact.ts` holds placeholders)
 - [ ] Brief (`/brief`) page
 - [ ] Brands section (the logos in `public/brands/` are unused so far)
 - [ ] Resume/CV download (the button exists, the PDF does not)

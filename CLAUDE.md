@@ -55,11 +55,15 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 [src/i18n/i18next.d.ts](src/i18n/i18next.d.ts) augments i18next's `CustomTypeOptions` so `t()` keys are type-checked against `uz.json`. **Consequence: `uz.json` is the source of truth for translation keys.** Adding a key to `en.json` alone will not typecheck; add it to `uz.json` first, then mirror it into `en.json` and `ru.json`.
 
+### Content data files
+
+`src/data/` holds everything that is content rather than code — [projects.ts](src/data/projects.ts), [services.ts](src/data/services.ts), [brands.ts](src/data/brands.ts) and [contact.ts](src/data/contact.ts). Copy that varies per project/service lives in the entry as a `Localized` object read through `pickLocalized`; only UI chrome (headings, filter labels, category names) goes in the locale files. Adding a project or a service stays a one-file change.
+
+**`contact.ts` currently holds placeholder values** — a fake email, phone and social URLs, marked with a TODO. Footer already renders them and the Contact section will too, so they must be replaced before the site is public.
+
 ### Portfolio data
 
 [src/data/projects.ts](src/data/projects.ts) is the single place work is added — drop an image in `public/projects/`, add an entry, done. No other file needs touching.
-
-Project titles are **not** in the locale files. They live in the data entry as a `Localized` object (`{ uz, en, ru }`) and are read through `pickLocalized` from [src/lib/localized.ts](src/lib/localized.ts). Only UI chrome (headings, filter labels, category names) goes in `src/i18n/locales/`. Keep it that way: putting per-project copy into the locale files would mean editing four files to add one project.
 
 Category labels resolve as ``t(`cat-${category}`)``, so every member of `PROJECT_CATEGORIES` needs a matching `cat-*` key in all three locales — TypeScript catches a missing one because template literal types distribute over the union.
 
@@ -87,18 +91,18 @@ Cross-page navigation ("Services" clicked while on `/brief`) works through a **m
 
 `ScrollManager` relies on effects running after DOM commit, so the target section exists by the time it looks it up. Sections carry `scroll-mt-28` to clear the sticky header.
 
-## Current state — much of the site is unbuilt
+## Current state
 
-Only **Header** (with a mobile menu), **Hero**, **About**, **Portfolio**, **LanSelect** and **TiltCard** are implemented. These are stubs that render nothing but their own name:
+Only **Contact** and the **Brief** page are still stubs. Everything else — Header, Hero, About, Brands, Services, Portfolio, Footer — is built. Still stubs, rendering nothing but their own name:
 
-- `Services.tsx`, `Contact.tsx` — these render only their own name, but they do carry the section `id` and spacing the nav depends on, so keep those when filling them in
-- `Footer.tsx`
+- `Contact.tsx` — renders only its own name, but it does carry the section `id` and spacing the nav depends on, so keep those when filling it in
 - `pages/brief/Brief.tsx` (the whole route)
 
 Known gaps, in case they come up:
 
 - **The projects in `src/data/projects.ts` are placeholder examples**, marked with a TODO. They must be replaced with real work before the site goes live.
-- **The stub sections have no responsive work yet.** Header, Hero and About are done (`sm:` / `lg:` breakpoints, `lg:` is where the desktop nav appears); follow the same pattern when filling in the others.
+- The brands marquee duplicates the list and translates the track by -50%, which only lines up because both copies are identical — keep them in sync if you touch `.marquee-group`. It also needs its own `prefers-reduced-motion` rule: the global one only shortens `animation-duration`, which freezes an infinite animation on its last frame instead of stopping it.
+- **The Contact stub has no responsive work yet.** Header, Hero and About are done (`sm:` / `lg:` breakpoints, `lg:` is where the desktop nav appears); follow the same pattern when filling in the others.
 - **No 404 route** and no SEO/Open Graph meta tags.
 - `public/brands/` holds ten client logos (Uzum, Uzinfocom, and others) that nothing in the code references yet — intended for an unbuilt brands/clients section.
 - **About's copy is hardcoded Uzbek JSX**, so EN/RU visitors still read Uzbek there.
