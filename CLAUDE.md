@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal portfolio site for **Jamolitdinov Izzatillo**, a graphic designer (Graphic / Web UI-UX / Motion / 3D). Single-page marketing site with a dark neon-green aesthetic, plus a planned `/breaf` (client brief) page.
+Personal portfolio site for **Jamolitdinov Izzatillo**, a graphic designer (Graphic / Web UI-UX / Motion / 3D). Single-page marketing site with a dark neon-green aesthetic, plus a `/brief` page for client briefs (still a stub).
 
 Content is trilingual: Uzbek (default), English, Russian.
 
@@ -37,9 +37,9 @@ This is the **only** CSS file in the project. Component-level `.css` files were 
 `src/index.css` has four parts, and each exists for a reason:
 
 1. `@theme` — design tokens. `--color-neon` (`#00ffa3`, the accent), `--color-ink` (`#031b1b`, the dark base), `--color-glass` / `--color-glass-border`, and the Montserrat `--font-sans`. Use `text-neon`, `bg-ink/75`, `border-neon/20` etc. rather than hardcoding hex values.
-2. `@layer base` — the `body` background (two radial gradients + a linear gradient) and the `body::before` grid overlay with a radial mask. Not expressible as utilities; leave it here.
+2. `@layer base` — the page background, plus a global `prefers-reduced-motion` guard. The background is two **fixed** pseudo-elements at `z-index: -1`: `body::before` holds the gradients, `body::after` the masked grid. They are fixed rather than painted on `body` because a body background stretches with the document, sliding the bottom gradient off-screen on long pages; `background-attachment: fixed` would be shorter but iOS Safari ignores it.
 3. `@utility glass` — the frosted-glass surface used by the header, buttons, the About card and the language selector. Apply as `glass rounded-[10px]`; the utility sets background, border and `backdrop-filter` only, so the radius comes from a Tailwind class alongside it.
-4. `@layer components` — `.tilt-card` / `.tilt-text`. These depend on CSS custom properties (`--px`, `--py`, `--rx`, `--ry`) written from JS, so they cannot be utilities.
+4. `@layer components` — `.tilt-card` / `.tilt-text`, which depend on CSS custom properties (`--px`, `--py`, `--rx`, `--ry`) written from JS, and the `.marquee` rules behind the brands strip. Neither is expressible as utilities.
 
 Note on `backdrop-filter`: write the standard property only. Lightning CSS adds the `-webkit-` prefix automatically. Writing both by hand with different values causes the minifier to drop the standard one, which silently breaks the effect in Firefox.
 
@@ -59,7 +59,15 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 `src/data/` holds everything that is content rather than code — [projects.ts](src/data/projects.ts), [services.ts](src/data/services.ts), [brands.ts](src/data/brands.ts) and [contact.ts](src/data/contact.ts). Copy that varies per project/service lives in the entry as a `Localized` object read through `pickLocalized`; only UI chrome (headings, filter labels, category names) goes in the locale files. Adding a project or a service stays a one-file change.
 
-**`contact.ts` currently holds placeholder values** — a fake email, phone and social URLs, marked with a TODO. Footer already renders them and the Contact section will too, so they must be replaced before the site is public.
+**`contact.ts` currently holds placeholder values** — a fake email, phone and social URLs, marked with a TODO. Both the Footer and the Contact section render them today, so they must be replaced before the site is public.
+
+### Contact form
+
+The form in [ContactForm.tsx](src/components/contact/ContactForm.tsx) posts straight to the Telegram Bot API from the browser via [src/lib/telegram.ts](src/lib/telegram.ts) — there is no backend. Credentials come from `VITE_TELEGRAM_BOT_TOKEN` / `VITE_TELEGRAM_CHAT_ID`, typed in [vite-env.d.ts](src/vite-env.d.ts).
+
+`VITE_`-prefixed values are inlined into the bundle, so the token is public by construction. That was a deliberate trade-off for having no backend; the mitigation is a bot used for nothing else. Do not move other secrets into `VITE_` vars on the strength of this precedent.
+
+`isTelegramConfigured` gates the send, so a missing `.env` surfaces as a form error rather than a crash and the site still builds. `sendMessage` is called **without** `parse_mode`: user text containing `<` or `&` would otherwise break Telegram's HTML parsing and fail the request.
 
 ### Portfolio data
 
@@ -83,7 +91,7 @@ The pattern is `lg`-only. Below `lg` the cards are uniform `aspect-4/3` tiles in
 
 ### Routing and scroll navigation
 
-[App.tsx](src/App.tsx) renders `ScrollManager`, `Header`, a `<Routes>` block (`/` → Home, `/brief` → Brief), then `Footer`. Home composes the page sections in order: Hero, About, Services, Portfolio, Contact.
+[App.tsx](src/App.tsx) renders `ScrollManager`, `Header`, a `<Routes>` block (`/` → Home, `/brief` → Brief), then `Footer`. Home composes the page sections in order: Hero, About, Brands, Services, Portfolio, Contact. Brands is not in `SECTIONS` — it is a strip, not a nav target.
 
 Header nav targets the on-page sections listed in [src/lib/sections.ts](src/lib/sections.ts) — that `SECTIONS` array is what the nav is generated from, and each id must match both a section `id` attribute and a translation key. Adding a section means touching the array, the component's `id`, and all three locale files.
 
@@ -93,18 +101,13 @@ Cross-page navigation ("Services" clicked while on `/brief`) works through a **m
 
 ## Current state
 
-Only **Contact** and the **Brief** page are still stubs. Everything else — Header, Hero, About, Brands, Services, Portfolio, Footer — is built. Still stubs, rendering nothing but their own name:
-
-- `Contact.tsx` — renders only its own name, but it does carry the section `id` and spacing the nav depends on, so keep those when filling it in
-- `pages/brief/Brief.tsx` (the whole route)
+Every section of the landing page is built. The only stub left is `pages/brief/Brief.tsx` — the whole `/brief` route, which the header and hero both link to.
 
 Known gaps, in case they come up:
 
 - **The projects in `src/data/projects.ts` are placeholder examples**, marked with a TODO. They must be replaced with real work before the site goes live.
 - The brands marquee duplicates the list and translates the track by -50%, which only lines up because both copies are identical — keep them in sync if you touch `.marquee-group`. It also needs its own `prefers-reduced-motion` rule: the global one only shortens `animation-duration`, which freezes an infinite animation on its last frame instead of stopping it.
-- **The Contact stub has no responsive work yet.** Header, Hero and About are done (`sm:` / `lg:` breakpoints, `lg:` is where the desktop nav appears); follow the same pattern when filling in the others.
 - **No 404 route** and no SEO/Open Graph meta tags.
-- `public/brands/` holds ten client logos (Uzum, Uzinfocom, and others) that nothing in the code references yet — intended for an unbuilt brands/clients section.
 - **About's copy is hardcoded Uzbek JSX**, so EN/RU visitors still read Uzbek there.
 - The Resume download button in About has no PDF behind it and no `onClick`.
 - `TiltCard` is mouse-only — no touch handlers, and `prefers-reduced-motion` is not honoured.
