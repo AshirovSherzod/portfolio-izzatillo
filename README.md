@@ -55,7 +55,8 @@ src/
 ├── App.tsx               # Header + Routes + Footer
 ├── index.css             # The single CSS file (Tailwind + design tokens)
 ├── assets/               # Images and logo
-├── hooks/                # useDismiss, useSectionNav
+├── data/                 # projects.ts — portfolio entries
+├── hooks/                # useDismiss, useSectionNav, useBodyScrollLock
 ├── lib/                  # sections.ts — nav sections + scroll helpers
 ├── i18n/
 │   ├── index.ts          # i18next setup, Language type
@@ -124,11 +125,12 @@ Done:
 - [x] Responsive layout for the sections that exist
 - [x] Working navigation — smooth scroll to sections, and routing to `/brief`
 - [x] Language persists across reloads (`localStorage`, then browser language)
+- [x] Portfolio grid with category filters and a project modal
 
 Not built yet:
 
+- [ ] Real project data (`src/data/projects.ts` currently holds placeholder examples)
 - [ ] Services section
-- [ ] Portfolio gallery
 - [ ] Contact section and form
 - [ ] Footer
 - [ ] Brief (`/brief`) page
@@ -136,6 +138,26 @@ Not built yet:
 - [ ] Resume/CV download (the button exists, the PDF does not)
 - [ ] Full translations — the About copy is still hardcoded Uzbek
 - [ ] 404 page and SEO meta tags
+
+## Adding a portfolio project
+
+1. Put the image in `public/projects/` (WebP preferred).
+2. Add an entry to the `projects` array in [`src/data/projects.ts`](src/data/projects.ts):
+
+```ts
+{
+  id: "uzum-rebrand",
+  title: { uz: "Uzum rebrending", en: "Uzum Rebrand", ru: "Ребрендинг Uzum" },
+  category: "graphic",          // graphic | web | motion | 3d
+  cover: "/projects/uzum-rebrand.webp",
+  images: ["/projects/uzum-1.webp"],  // optional, shown in the modal
+  client: "Uzum",                     // optional
+  year: 2025,                         // optional
+  link: "https://behance.net/...",    // optional
+}
+```
+
+No other file needs editing — the grid, the filters and the modal all read from this array. If `cover` is missing or the file cannot be loaded, a placeholder is shown instead, so the layout never breaks.
 
 ## Notes
 

@@ -55,6 +55,16 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 [src/i18n/i18next.d.ts](src/i18n/i18next.d.ts) augments i18next's `CustomTypeOptions` so `t()` keys are type-checked against `uz.json`. **Consequence: `uz.json` is the source of truth for translation keys.** Adding a key to `en.json` alone will not typecheck; add it to `uz.json` first, then mirror it into `en.json` and `ru.json`.
 
+### Portfolio data
+
+[src/data/projects.ts](src/data/projects.ts) is the single place work is added — drop an image in `public/projects/`, add an entry, done. No other file needs touching.
+
+Project titles are **not** in the locale files. They live in the data entry as a `Localized` object (`{ uz, en, ru }`) and are read through `pickLocalized` from [src/lib/localized.ts](src/lib/localized.ts). Only UI chrome (headings, filter labels, category names) goes in `src/i18n/locales/`. Keep it that way: putting per-project copy into the locale files would mean editing four files to add one project.
+
+Category labels resolve as ``t(`cat-${category}`)``, so every member of `PROJECT_CATEGORIES` needs a matching `cat-*` key in all three locales — TypeScript catches a missing one because template literal types distribute over the union.
+
+`cover` and `images` are optional. [ProjectImage](src/components/portfolio/ProjectImage.tsx) renders a placeholder when a path is missing _or_ when the file 404s (`onError`), so a half-filled data file never breaks the grid. It tracks the failed URL rather than a boolean so the state resets on its own when `src` changes — resetting it in an effect trips the `react-hooks/set-state-in-effect` lint rule.
+
 ### Routing and scroll navigation
 
 [App.tsx](src/App.tsx) renders `ScrollManager`, `Header`, a `<Routes>` block (`/` → Home, `/brief` → Brief), then `Footer`. Home composes the page sections in order: Hero, About, Services, Portfolio, Contact.
@@ -67,14 +77,15 @@ Cross-page navigation ("Services" clicked while on `/brief`) works through a **m
 
 ## Current state — much of the site is unbuilt
 
-Only **Header** (with a mobile menu), **Hero**, **About**, **LanSelect** and **TiltCard** are implemented. These are stubs that render nothing but their own name:
+Only **Header** (with a mobile menu), **Hero**, **About**, **Portfolio**, **LanSelect** and **TiltCard** are implemented. These are stubs that render nothing but their own name:
 
-- `Services.tsx`, `Portfolio.tsx`, `Contact.tsx` — these render only their own name, but they do carry the section `id` and spacing the nav depends on, so keep those when filling them in
+- `Services.tsx`, `Contact.tsx` — these render only their own name, but they do carry the section `id` and spacing the nav depends on, so keep those when filling them in
 - `Footer.tsx`
 - `pages/brief/Brief.tsx` (the whole route)
 
 Known gaps, in case they come up:
 
+- **The projects in `src/data/projects.ts` are placeholder examples**, marked with a TODO. They must be replaced with real work before the site goes live.
 - **The stub sections have no responsive work yet.** Header, Hero and About are done (`sm:` / `lg:` breakpoints, `lg:` is where the desktop nav appears); follow the same pattern when filling in the others.
 - **No 404 route** and no SEO/Open Graph meta tags.
 - `public/brands/` holds ten client logos (Uzum, Uzinfocom, and others) that nothing in the code references yet — intended for an unbuilt brands/clients section.

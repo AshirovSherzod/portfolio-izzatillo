@@ -6,7 +6,20 @@
   "contact": "Contact Me",
   "brief": "Brief",
   "menu": "Menu",
+  "close": "Close",
   "hero-title": "A visual-driven",
   "designer": "designer",
-  "hero-desc": "Graphic, Web (UI/UX), Motion & 3D"
+  "hero-desc": "Graphic, Web (UI/UX), Motion & 3D",
+  "portfolio-title": "My Work",
+  "portfolio-desc": "Selected projects across different disciplines",
+  "filter-all": "All",
+  "cat-graphic": "Graphic",
+  "cat-web": "Web (UI/UX)",
+  "cat-motion": "Motion",
+  "cat-3d": "3D",
+  "portfolio-empty": "No work added in this category yet",
+  "project-soon": "Coming soon",
+  "project-client": "Client",
+  "project-year": "Year",
+  "project-link": "View project"
 }

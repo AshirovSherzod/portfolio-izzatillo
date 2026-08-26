@@ -6,7 +6,20 @@
   "contact": "Связаться",
   "brief": "Бриф",
   "menu": "Меню",
+  "close": "Закрыть",
   "hero-title": "Визуальный ",
   "designer": "дизайнер",
-  "hero-desc": "Графика, веб (UI/UX), моушн и 3D"
+  "hero-desc": "Графика, веб (UI/UX), моушн и 3D",
+  "portfolio-title": "Мои работы",
+  "portfolio-desc": "Избранные проекты в разных направлениях",
+  "filter-all": "Все",
+  "cat-graphic": "Графика",
+  "cat-web": "Web (UI/UX)",
+  "cat-motion": "Моушн",
+  "cat-3d": "3D",
+  "portfolio-empty": "В этом направлении работ пока нет",
+  "project-soon": "Скоро",
+  "project-client": "Клиент",
+  "project-year": "Год",
+  "project-link": "Смотреть проект"
 }

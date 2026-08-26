@@ -6,7 +6,20 @@
   "contact": "Bog‘lanish",
   "brief": "Brief",
   "menu": "Menyu",
+  "close": "Yopish",
   "hero-title": "Vizual orqali gapiradigan",
   "designer": "dizayner",
-  "hero-desc": "Grafik, Web (UI/UX), moushin va 3D dizaynlar"
+  "hero-desc": "Grafik, Web (UI/UX), moushin va 3D dizaynlar",
+  "portfolio-title": "Ishlarim",
+  "portfolio-desc": "Turli yo'nalishlarda bajarilgan loyihalar",
+  "filter-all": "Hammasi",
+  "cat-graphic": "Grafika",
+  "cat-web": "Web (UI/UX)",
+  "cat-motion": "Moushn",
+  "cat-3d": "3D",
+  "portfolio-empty": "Bu yo'nalishda hali ish qo'shilmagan",
+  "project-soon": "Tez orada",
+  "project-client": "Mijoz",
+  "project-year": "Yil",
+  "project-link": "Loyihani ko'rish"
 }
