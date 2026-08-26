@@ -36,6 +36,21 @@ npm run dev
 
 The dev server usually starts at `http://localhost:5173`.
 
+### Contact form (optional)
+
+The contact form posts to a Telegram bot. Without configuration the site
+still builds and runs — only submitting the form fails.
+
+```bash
+cp .env.example .env
+```
+
+Fill in `VITE_TELEGRAM_BOT_TOKEN` (from @BotFather) and `VITE_TELEGRAM_CHAT_ID`
+(from @userinfobot).
+
+> Anything prefixed `VITE_` is inlined into the browser bundle, so this token
+> is **not** secret. Use a bot created solely for this site and nothing else.
+
 ### Scripts
 
 | Command           | What it does                                         |
@@ -57,7 +72,7 @@ src/
 ├── assets/               # Images and logo
 ├── data/                 # projects, services, brands, contact
 ├── hooks/                # useDismiss, useSectionNav, useBodyScrollLock
-├── lib/                  # sections.ts — nav sections + scroll helpers
+├── lib/                  # nav sections, localized copy, Telegram
 ├── i18n/
 │   ├── index.ts          # i18next setup, Language type
 │   ├── i18next.d.ts      # Type-safe t() keys
@@ -67,6 +82,7 @@ src/
 │   └── brief/            # Brief page
 └── components/
     ├── brands/           # Client logo marquee
+    ├── contact/          # Contact details + Telegram form
     ├── header/           # Navigation + language switcher
     ├── hero/             # Hero section
     ├── about/            # About me
@@ -130,11 +146,11 @@ Done:
 - [x] Services section
 - [x] Brands marquee
 - [x] Footer
+- [x] Contact section with a Telegram-backed form
 
 Not built yet:
 
 - [ ] Real project data (`src/data/projects.ts` currently holds placeholder examples)
-- [ ] Contact section and form
 - [ ] Real contact details (`src/data/contact.ts` holds placeholders)
 - [ ] Brief (`/brief`) page
 - [ ] Brands section (the logos in `public/brands/` are unused so far)

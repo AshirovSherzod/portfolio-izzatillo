@@ -24,5 +24,19 @@
   "project-soon": "Coming soon",
   "project-client": "Client",
   "project-year": "Year",
-  "project-link": "View project"
+  "project-link": "View project",
+  "contact-title": "Get in touch",
+  "contact-desc": "Let's talk about your project — leave a message or reach out directly",
+  "contact-direct": "Direct",
+  "form-name": "Your name",
+  "form-name-ph": "First and last name",
+  "form-contact": "Contact",
+  "form-contact-ph": "Email or Telegram username",
+  "form-message": "Message",
+  "form-message-ph": "Tell me briefly about your project",
+  "form-submit": "Send",
+  "form-sending": "Sending...",
+  "form-required": "This field is required",
+  "form-success": "Your message has been sent. I'll be in touch shortly.",
+  "form-error": "Could not send. Please try again or reach out directly."
 }

@@ -25,3 +25,8 @@ dist-ssr
 
 # Migratsiyadan oldingi kod nusxasi (lokal, git tarixida allaqachon bor)
 backup
+
+# Muhit o'zgaruvchilari (bot tokeni va h.k.)
+.env
+.env.*
+!.env.example

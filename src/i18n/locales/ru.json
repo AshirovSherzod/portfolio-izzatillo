@@ -24,5 +24,19 @@
   "project-soon": "Скоро",
   "project-client": "Клиент",
   "project-year": "Год",
-  "project-link": "Смотреть проект"
+  "project-link": "Смотреть проект",
+  "contact-title": "Связаться",
+  "contact-desc": "Давайте обсудим ваш проект — оставьте сообщение или напишите напрямую",
+  "contact-direct": "Напрямую",
+  "form-name": "Ваше имя",
+  "form-name-ph": "Имя и фамилия",
+  "form-contact": "Контакт",
+  "form-contact-ph": "Email или Telegram username",
+  "form-message": "Сообщение",
+  "form-message-ph": "Кратко расскажите о проекте",
+  "form-submit": "Отправить",
+  "form-sending": "Отправка...",
+  "form-required": "Обязательное поле",
+  "form-success": "Сообщение отправлено. Скоро свяжусь с вами.",
+  "form-error": "Не удалось отправить. Попробуйте ещё раз или напишите напрямую."
 }

@@ -24,5 +24,19 @@
   "project-soon": "Tez orada",
   "project-client": "Mijoz",
   "project-year": "Yil",
-  "project-link": "Loyihani ko'rish"
+  "project-link": "Loyihani ko'rish",
+  "contact-title": "Bog'lanish",
+  "contact-desc": "Loyihangiz haqida gaplashaylik — xabar qoldiring yoki to'g'ridan-to'g'ri yozing",
+  "contact-direct": "To'g'ridan-to'g'ri",
+  "form-name": "Ismingiz",
+  "form-name-ph": "Ism familiya",
+  "form-contact": "Aloqa",
+  "form-contact-ph": "Email yoki Telegram username",
+  "form-message": "Xabar",
+  "form-message-ph": "Loyihangiz haqida qisqacha yozing",
+  "form-submit": "Yuborish",
+  "form-sending": "Yuborilmoqda...",
+  "form-required": "Bu maydon to'ldirilishi shart",
+  "form-success": "Xabaringiz yuborildi. Tez orada bog'lanaman.",
+  "form-error": "Yuborib bo'lmadi. Iltimos, qaytadan urinib ko'ring yoki to'g'ridan-to'g'ri yozing."
 }
