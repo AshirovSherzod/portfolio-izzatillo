@@ -5,12 +5,16 @@ import uz from "./locales/uz.json";
 import en from "./locales/en.json";
 import ru from "./locales/ru.json";
 
+export const resources = {
+  uz: { translation: uz },
+  en: { translation: en },
+  ru: { translation: ru },
+} as const;
+
+export type Language = keyof typeof resources;
+
 i18n.use(initReactI18next).init({
-  resources: {
-    uz: { translation: uz },
-    en: { translation: en },
-    ru: { translation: ru },
-  },
+  resources,
   lng: "uz",
   fallbackLng: "en",
   interpolation: {
