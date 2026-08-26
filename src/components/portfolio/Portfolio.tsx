@@ -8,22 +8,11 @@ import {
 } from "../../data/projects";
 import ProjectCard from "./ProjectCard";
 import ProjectModal from "./ProjectModal";
+import { getTileSize } from "./bento";
 
 type Filter = ProjectCategory | "all";
 
 const FILTERS: Filter[] = ["all", ...PROJECT_CATEGORIES];
-
-/**
- * Uch ustunli gridda har bir ustun turlicha pastga suriladi — diagonal ritm
- * hosil bo'ladi. Bu `translate` bo'lgani uchun layoutga tegmaydi: kartochkalar
- * bir xil o'lchamda qoladi va gridda hech qachon bo'shliq paydo bo'lmaydi.
- * Tailwind klass nomlarini matn sifatida topishi uchun to'liq yozilgan.
- */
-const COLUMN_OFFSETS = [
-  "lg:translate-y-0",
-  "lg:translate-y-14",
-  "lg:translate-y-7",
-];
 
 function Portfolio() {
   const { t } = useTranslation();
@@ -82,16 +71,16 @@ function Portfolio() {
         <div
           // filter o'zgarganda grid qayta yig'iladi va animatsiya boshidan ketadi
           key={filter}
-          className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6 lg:pb-14"
+          className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:auto-rows-[230px] lg:grid-cols-4 lg:gap-6"
         >
           {visibleProjects.map((project, index) => (
-            <div key={project.id} className={COLUMN_OFFSETS[index % 3]}>
-              <ProjectCard
-                project={project}
-                index={index}
-                onOpen={setOpenProject}
-              />
-            </div>
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={index}
+              size={getTileSize(index, visibleProjects.length)}
+              onOpen={setOpenProject}
+            />
           ))}
         </div>
       )}

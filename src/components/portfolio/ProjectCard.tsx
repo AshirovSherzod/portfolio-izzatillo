@@ -3,15 +3,23 @@ import { MdArrowOutward } from "react-icons/md";
 import type { Project } from "../../data/projects";
 import { pickLocalized } from "../../lib/localized";
 import ProjectImage from "./ProjectImage";
+import { getTileClasses, type TileSize } from "./bento";
 
 type ProjectCardProps = {
   project: Project;
   /** Tartib raqami — kartochkadagi "01" va animatsiya navbati uchun */
   index: number;
+  size: TileSize;
   onOpen: (project: Project) => void;
 };
 
-function ProjectCard({ project, index, onOpen }: ProjectCardProps) {
+const TITLE_SIZES: Record<TileSize, string> = {
+  large: "lg:text-2xl",
+  wide: "lg:text-lg",
+  small: "",
+};
+
+function ProjectCard({ project, index, size, onOpen }: ProjectCardProps) {
   const { t, i18n } = useTranslation();
   const title = pickLocalized(project.title, i18n.language);
   const number = String(index + 1).padStart(2, "0");
@@ -21,7 +29,7 @@ function ProjectCard({ project, index, onOpen }: ProjectCardProps) {
       type="button"
       onClick={() => onOpen(project)}
       style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
-      className="group animate-fade-up relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-ink/60 text-left transition-[transform,border-color,box-shadow] duration-400 hover:-translate-y-1.5 hover:border-neon/50 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neon"
+      className={`group animate-fade-up relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-ink/60 text-left transition-[transform,border-color,box-shadow] duration-400 hover:-translate-y-1.5 hover:border-neon/50 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neon lg:aspect-auto lg:h-full ${getTileClasses(size)}`}
     >
       <ProjectImage
         src={project.cover}
@@ -42,7 +50,9 @@ function ProjectCard({ project, index, onOpen }: ProjectCardProps) {
 
       <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-5">
         <div className="min-w-0">
-          <h3 className="truncate font-semibold text-white transition-colors duration-300 group-hover:text-neon">
+          <h3
+            className={`truncate font-semibold text-white transition-colors duration-300 group-hover:text-neon ${TITLE_SIZES[size]}`}
+          >
             {title}
           </h3>
           {/* Hoverda sarlavha ostida o'sib chiqadigan neon chiziq */}

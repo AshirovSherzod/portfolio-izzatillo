@@ -63,7 +63,17 @@ Project titles are **not** in the locale files. They live in the data entry as a
 
 Category labels resolve as ``t(`cat-${category}`)``, so every member of `PROJECT_CATEGORIES` needs a matching `cat-*` key in all three locales — TypeScript catches a missing one because template literal types distribute over the union.
 
-Every card is the same size (`aspect-4/3`); the layout gets its rhythm from `COLUMN_OFFSETS` in [Portfolio.tsx](src/components/portfolio/Portfolio.tsx), which pushes each column down a different amount at `lg`. This is `translate`, not margin, so it is purely visual — the grid stays uniform underneath and cannot develop holes. A bento layout with 2×2 spans was tried first and rejected: mixed tile sizes look badly unbalanced at small project counts, and `grid-flow-row-dense` still left a visible gap. Do not reintroduce size variation here.
+The grid is a bento layout, defined in [bento.ts](src/components/portfolio/bento.ts). Tile sizes come from a fixed six-step cycle that tiles a 4-column grid exactly:
+
+```
+1 1 2 2      large = 2x2   wide = 2x1   small = 1x1
+1 1 3 4      cycle: large, wide, small, small, wide, wide
+5 5 6 6
+```
+
+The cycle is applied **only to complete groups of six**; whatever is left over renders as `wide`. That guard is the whole point — an earlier version applied a size rule to every index and a partly-consumed pattern left a hole in the middle of the grid, which is very visible. If you change `BENTO_CYCLE`, verify the new cycle still packs a 4-column grid with no gaps before committing.
+
+The pattern is `lg`-only. Below `lg` the cards are uniform `aspect-4/3` tiles in a 1- or 2-column grid; at `lg` they switch to `aspect-auto` and take their height from `auto-rows-[230px]` and their row span.
 
 `cover` and `images` are optional. [ProjectImage](src/components/portfolio/ProjectImage.tsx) renders a placeholder when a path is missing _or_ when the file 404s (`onError`), so a half-filled data file never breaks the grid. It tracks the failed URL rather than a boolean so the state resets on its own when `src` changes — resetting it in an effect trips the `react-hooks/set-state-in-effect` lint rule.
 
