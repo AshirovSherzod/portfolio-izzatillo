@@ -30,6 +30,28 @@
   body {
     position: relative;
     min-height: 100dvh;
+    background-color: #000000;
+  }
+
+  /*
+   * Fon ikkita mahkamlangan qatlamdan iborat. `body` ga bog'lansa, sahifa
+   * uzunligiga qarab cho'zilib, pastdagi gradient ekrandan chiqib ketardi.
+   * `position: fixed` ularni ekran o'lchamiga bog'laydi.
+   *
+   * `background-attachment: fixed` ham shu ishni qilardi, lekin iOS Safari
+   * uni qo'llab-quvvatlamaydi.
+   */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* Gradientlar */
+  body::before {
     background:
       radial-gradient(
         circle at top right,
@@ -44,11 +66,8 @@
       linear-gradient(180deg, #031b1b 0%, #000000 50%, #031b1b 100%);
   }
 
-  body::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
+  /* Grid to'ri — gradientlar ustida */
+  body::after {
     background-image:
       linear-gradient(rgba(0, 255, 150, 0.08) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0, 255, 150, 0.08) 1px, transparent 1px);
