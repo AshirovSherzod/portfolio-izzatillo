@@ -29,7 +29,7 @@ function ProjectCard({ project, index, size, onOpen }: ProjectCardProps) {
       type="button"
       onClick={() => onOpen(project)}
       style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
-      className={`group animate-fade-up relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-ink/60 text-left transition-[transform,border-color,box-shadow] duration-400 hover:-translate-y-1.5 hover:border-neon/50 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neon lg:aspect-auto lg:h-full ${getTileClasses(size)}`}
+      className={`group animate-fade-up relative aspect-4/3 w-full overflow-hidden rounded-2xl border border-white/10 bg-ink/60 text-left transition-[border-color,box-shadow] duration-400 hover:border-neon/50 hover:shadow-[0_24px_60px_rgba(0,0,0,0.55)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neon lg:aspect-auto lg:h-full ${getTileClasses(size)}`}
     >
       <ProjectImage
         src={project.cover}
