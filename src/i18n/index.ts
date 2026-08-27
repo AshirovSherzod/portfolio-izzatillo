@@ -13,13 +13,49 @@ export const resources = {
 
 export type Language = keyof typeof resources;
 
+export const LANGUAGE_STORAGE_KEY = "lang";
+
+const DEFAULT_LANGUAGE: Language = "uz";
+
+function isLanguage(value: string | null): value is Language {
+  return value !== null && value in resources;
+}
+
+/**
+ * Til tanlash tartibi:
+ * 1) foydalanuvchi oldin tanlagan til (localStorage)
+ * 2) brauzer tili
+ * 3) o'zbekcha
+ */
+function resolveInitialLanguage(): Language {
+  try {
+    const saved = localStorage.getItem(LANGUAGE_STORAGE_KEY);
+    if (isLanguage(saved)) return saved;
+  } catch {
+    // localStorage yopiq bo'lishi mumkin (private rejim) — e'tiborsiz qoldiramiz
+  }
+
+  const fromBrowser = navigator.language.split("-")[0];
+  if (isLanguage(fromBrowser)) return fromBrowser;
+
+  return DEFAULT_LANGUAGE;
+}
+
+const initialLanguage = resolveInitialLanguage();
+
 i18n.use(initReactI18next).init({
   resources,
-  lng: "uz",
-  fallbackLng: "en",
+  lng: initialLanguage,
+  fallbackLng: DEFAULT_LANGUAGE,
   interpolation: {
     escapeValue: false,
   },
+});
+
+// <html lang="..."> ni tanlangan tilga moslab turamiz
+document.documentElement.lang = initialLanguage;
+i18n.on("languageChanged", (lng) => {
+  document.documentElement.lang = lng;
 });
 
 export default i18n;

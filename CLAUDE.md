@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal portfolio site for **Jamolitdinov Izzatillo**, a graphic designer (Graphic / Web UI-UX / Motion / 3D). Single-page marketing site with a dark neon-green aesthetic, plus a planned `/breaf` (client brief) page.
+Personal portfolio site for **Jamolitdinov Izzatillo**, a graphic designer (Graphic / Web UI-UX / Motion / 3D). Single-page marketing site with a dark neon-green aesthetic, plus a `/brief` page for client briefs (still a stub).
 
 Content is trilingual: Uzbek (default), English, Russian.
 
@@ -37,9 +37,9 @@ This is the **only** CSS file in the project. Component-level `.css` files were 
 `src/index.css` has four parts, and each exists for a reason:
 
 1. `@theme` — design tokens. `--color-neon` (`#00ffa3`, the accent), `--color-ink` (`#031b1b`, the dark base), `--color-glass` / `--color-glass-border`, and the Montserrat `--font-sans`. Use `text-neon`, `bg-ink/75`, `border-neon/20` etc. rather than hardcoding hex values.
-2. `@layer base` — the `body` background (two radial gradients + a linear gradient) and the `body::before` grid overlay with a radial mask. Not expressible as utilities; leave it here.
+2. `@layer base` — the page background, plus a global `prefers-reduced-motion` guard. The background is two **fixed** pseudo-elements at `z-index: -1`: `body::before` holds the gradients, `body::after` the masked grid. They are fixed rather than painted on `body` because a body background stretches with the document, sliding the bottom gradient off-screen on long pages; `background-attachment: fixed` would be shorter but iOS Safari ignores it.
 3. `@utility glass` — the frosted-glass surface used by the header, buttons, the About card and the language selector. Apply as `glass rounded-[10px]`; the utility sets background, border and `backdrop-filter` only, so the radius comes from a Tailwind class alongside it.
-4. `@layer components` — `.tilt-card` / `.tilt-text`. These depend on CSS custom properties (`--px`, `--py`, `--rx`, `--ry`) written from JS, so they cannot be utilities.
+4. `@layer components` — `.tilt-card` / `.tilt-text`, which depend on CSS custom properties (`--px`, `--py`, `--rx`, `--ry`) written from JS, and the `.marquee` rules behind the brands strip. Neither is expressible as utilities.
 
 Note on `backdrop-filter`: write the standard property only. Lightning CSS adds the `-webkit-` prefix automatically. Writing both by hand with different values causes the minifier to drop the standard one, which silently breaks the effect in Firefox.
 
@@ -55,25 +55,62 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 [src/i18n/i18next.d.ts](src/i18n/i18next.d.ts) augments i18next's `CustomTypeOptions` so `t()` keys are type-checked against `uz.json`. **Consequence: `uz.json` is the source of truth for translation keys.** Adding a key to `en.json` alone will not typecheck; add it to `uz.json` first, then mirror it into `en.json` and `ru.json`.
 
-### Routing
+### Content data files
 
-[App.tsx](src/App.tsx) renders `Header`, a `<Routes>` block (`/` → Home, `/breaf` → Breaf), then `Footer`. Home composes the page sections in order: Hero, About, Services, Portfolio, Contact.
+`src/data/` holds everything that is content rather than code — [projects.ts](src/data/projects.ts), [services.ts](src/data/services.ts), [brands.ts](src/data/brands.ts) and [contact.ts](src/data/contact.ts). Copy that varies per project/service lives in the entry as a `Localized` object read through `pickLocalized`; only UI chrome (headings, filter labels, category names) goes in the locale files. Adding a project or a service stays a one-file change.
 
-## Current state — much of the site is unbuilt
+**`contact.ts` currently holds placeholder values** — a fake email, phone and social URLs, marked with a TODO. Both the Footer and the Contact section render them today, so they must be replaced before the site is public.
 
-Only **Header**, **Hero**, **About**, **LanSelect** and **TiltCard** are implemented. These are stubs that render nothing but their own name:
+### Contact form
 
-- `Services.tsx`, `Portfolio.tsx`, `Contact.tsx`, `Footer.tsx`
-- `pages/breaf/Breaf.tsx` (the whole route)
+The form in [ContactForm.tsx](src/components/contact/ContactForm.tsx) posts straight to the Telegram Bot API from the browser via [src/lib/telegram.ts](src/lib/telegram.ts) — there is no backend. Credentials come from `VITE_TELEGRAM_BOT_TOKEN` / `VITE_TELEGRAM_CHAT_ID`, typed in [vite-env.d.ts](src/vite-env.d.ts).
+
+`VITE_`-prefixed values are inlined into the bundle, so the token is public by construction. That was a deliberate trade-off for having no backend; the mitigation is a bot used for nothing else. Do not move other secrets into `VITE_` vars on the strength of this precedent.
+
+`isTelegramConfigured` gates the send, so a missing `.env` surfaces as a form error rather than a crash and the site still builds. `sendMessage` is called **without** `parse_mode`: user text containing `<` or `&` would otherwise break Telegram's HTML parsing and fail the request.
+
+### Portfolio data
+
+[src/data/projects.ts](src/data/projects.ts) is the single place work is added — drop an image in `public/projects/`, add an entry, done. No other file needs touching.
+
+Category labels resolve as ``t(`cat-${category}`)``, so every member of `PROJECT_CATEGORIES` needs a matching `cat-*` key in all three locales — TypeScript catches a missing one because template literal types distribute over the union.
+
+The grid is a bento layout, defined in [bento.ts](src/components/portfolio/bento.ts). Tile sizes come from a fixed six-step cycle that tiles a 4-column grid exactly:
+
+```
+1 1 2 2      large = 2x2   wide = 2x1   small = 1x1
+1 1 3 4      cycle: large, wide, small, small, wide, wide
+5 5 6 6
+```
+
+The cycle is applied **only to complete groups of six**; whatever is left over renders as `wide`. That guard is the whole point — an earlier version applied a size rule to every index and a partly-consumed pattern left a hole in the middle of the grid, which is very visible. If you change `BENTO_CYCLE`, verify the new cycle still packs a 4-column grid with no gaps before committing.
+
+The pattern is `lg`-only. Below `lg` the cards are uniform `aspect-4/3` tiles in a 1- or 2-column grid; at `lg` they switch to `aspect-auto` and take their height from `auto-rows-[230px]` and their row span.
+
+`cover` and `images` are optional. [ProjectImage](src/components/portfolio/ProjectImage.tsx) renders a placeholder when a path is missing _or_ when the file 404s (`onError`), so a half-filled data file never breaks the grid. It tracks the failed URL rather than a boolean so the state resets on its own when `src` changes — resetting it in an effect trips the `react-hooks/set-state-in-effect` lint rule.
+
+### Routing and scroll navigation
+
+[App.tsx](src/App.tsx) renders `ScrollManager`, `Header`, a `<Routes>` block (`/` → Home, `/brief` → Brief), then `Footer`. Home composes the page sections in order: Hero, About, Brands, Services, Portfolio, Contact. Brands is not in `SECTIONS` — it is a strip, not a nav target.
+
+Header nav targets the on-page sections listed in [src/lib/sections.ts](src/lib/sections.ts) — that `SECTIONS` array is what the nav is generated from, and each id must match both a section `id` attribute and a translation key. Adding a section means touching the array, the component's `id`, and all three locale files.
+
+Cross-page navigation ("Services" clicked while on `/brief`) works through a **module-level `pendingSection` variable**, not router state. `useSectionNav` sets it and navigates; `ScrollManager` in App consumes it on the next pathname change and scrolls there, otherwise scrolls to top. Router state was tried first and does not work here: clearing the state after scrolling re-fires the effect and yanks the page back to the top mid-scroll.
+
+`ScrollManager` relies on effects running after DOM commit, so the target section exists by the time it looks it up. Sections carry `scroll-mt-28` to clear the sticky header.
+
+## Current state
+
+Every section of the landing page is built. The only stub left is `pages/brief/Brief.tsx` — the whole `/brief` route, which the header and hero both link to.
 
 Known gaps, in case they come up:
 
-- **No responsive design at all** — there is not a single breakpoint (`sm:` / `md:` / `lg:`) in the codebase. Fixed widths like `w-1/2` and `w-[30%]` break on mobile.
-- **No interactive navigation** — header nav items are plain `<li>` elements, and the Hero/Header buttons have no `onClick` or `Link`.
-- **Language does not persist** — `LanSelect` writes the choice to `localStorage` under `"lang"`, but `i18n/index.ts` hardcodes `lng: "uz"` and never reads it back.
+- **The projects in `src/data/projects.ts` are placeholder examples**, marked with a TODO. They must be replaced with real work before the site goes live.
+- The brands marquee duplicates the list and translates the track by -50%, which only lines up because both copies are identical — keep them in sync if you touch `.marquee-group`. It also needs its own `prefers-reduced-motion` rule: the global one only shortens `animation-duration`, which freezes an infinite animation on its last frame instead of stopping it.
 - **No 404 route** and no SEO/Open Graph meta tags.
-- `public/brands/` holds ten client logos (Uzum, Uzinfocom, and others) that nothing in the code references yet — intended for an unbuilt brands/clients section.
-- "Breaf" is a misspelling of "Brief" that runs through the route path, filenames and i18n keys.
+- **About's copy is hardcoded Uzbek JSX**, so EN/RU visitors still read Uzbek there.
+- The Resume download button in About has no PDF behind it and no `onClick`.
+- `TiltCard` is mouse-only — no touch handlers, and `prefers-reduced-motion` is not honoured.
 
 ## Repo conventions
 

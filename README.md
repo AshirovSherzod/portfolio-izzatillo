@@ -36,6 +36,21 @@ npm run dev
 
 The dev server usually starts at `http://localhost:5173`.
 
+### Contact form (optional)
+
+The contact form posts to a Telegram bot. Without configuration the site
+still builds and runs — only submitting the form fails.
+
+```bash
+cp .env.example .env
+```
+
+Fill in `VITE_TELEGRAM_BOT_TOKEN` (from @BotFather) and `VITE_TELEGRAM_CHAT_ID`
+(from @userinfobot).
+
+> Anything prefixed `VITE_` is inlined into the browser bundle, so this token
+> is **not** secret. Use a bot created solely for this site and nothing else.
+
 ### Scripts
 
 | Command           | What it does                                         |
@@ -55,14 +70,19 @@ src/
 ├── App.tsx               # Header + Routes + Footer
 ├── index.css             # The single CSS file (Tailwind + design tokens)
 ├── assets/               # Images and logo
+├── data/                 # projects, services, brands, contact
+├── hooks/                # useDismiss, useSectionNav, useBodyScrollLock
+├── lib/                  # nav sections, localized copy, Telegram
 ├── i18n/
 │   ├── index.ts          # i18next setup, Language type
 │   ├── i18next.d.ts      # Type-safe t() keys
 │   └── locales/          # uz.json, en.json, ru.json
 ├── pages/
 │   ├── home/             # Landing page (composes the sections)
-│   └── breaf/            # Brief page
+│   └── brief/            # Brief page
 └── components/
+    ├── brands/           # Client logo marquee
+    ├── contact/          # Contact details + Telegram form
     ├── header/           # Navigation + language switcher
     ├── hero/             # Hero section
     ├── about/            # About me
@@ -114,24 +134,49 @@ If a key is missing from `uz.json`, TypeScript will report an error.
 
 Done:
 
-- [x] Header (navigation, logo, language switcher)
+- [x] Header — sticky, with a mobile burger menu
 - [x] Hero section
 - [x] About section
 - [x] 3D tilt card effect
 - [x] UZ / EN / RU translations (core keys)
+- [x] Responsive layout for the sections that exist
+- [x] Working navigation — smooth scroll to sections, and routing to `/brief`
+- [x] Language persists across reloads (`localStorage`, then browser language)
+- [x] Portfolio grid with category filters and a project modal
+- [x] Services section
+- [x] Brands marquee
+- [x] Footer
+- [x] Contact section with a Telegram-backed form
 
 Not built yet:
 
-- [ ] Services section
-- [ ] Portfolio gallery
-- [ ] Contact form
-- [ ] Footer
-- [ ] Breaf (`/breaf`) page
+- [ ] Real project data (`src/data/projects.ts` currently holds placeholder examples)
+- [ ] Real contact details (`src/data/contact.ts` holds placeholders)
+- [ ] Brief (`/brief`) page
 - [ ] Brands section (the logos in `public/brands/` are unused so far)
-- [ ] Responsive design (no breakpoints yet)
-- [ ] Working navigation buttons (scroll / routing)
-- [ ] Restoring the selected language from `localStorage`
+- [ ] Resume/CV download (the button exists, the PDF does not)
+- [ ] Full translations — the About copy is still hardcoded Uzbek
 - [ ] 404 page and SEO meta tags
+
+## Adding a portfolio project
+
+1. Put the image in `public/projects/` (WebP preferred).
+2. Add an entry to the `projects` array in [`src/data/projects.ts`](src/data/projects.ts):
+
+```ts
+{
+  id: "uzum-rebrand",
+  title: { uz: "Uzum rebrending", en: "Uzum Rebrand", ru: "Ребрендинг Uzum" },
+  category: "graphic",          // graphic | web | motion | 3d
+  cover: "/projects/uzum-rebrand.webp",
+  images: ["/projects/uzum-1.webp"],  // optional, shown in the modal
+  client: "Uzum",                     // optional
+  year: 2025,                         // optional
+  link: "https://behance.net/...",    // optional
+}
+```
+
+No other file needs editing — the grid, the filters and the modal all read from this array. If `cover` is missing or the file cannot be loaded, a placeholder is shown instead, so the layout never breaks.
 
 ## Notes
 
