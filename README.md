@@ -70,19 +70,20 @@ src/
 ├── App.tsx               # Header + Routes + Footer
 ├── index.css             # The single CSS file (Tailwind + design tokens)
 ├── assets/               # Images and logo
-├── data/                 # projects, services, brands, contact
+├── data/                 # projects, services, brands, contact, brief
 ├── hooks/                # useDismiss, useSectionNav, useBodyScrollLock
-├── lib/                  # nav sections, localized copy, Telegram
+├── lib/                  # nav sections, localized copy, Telegram, form styles
 ├── i18n/
 │   ├── index.ts          # i18next setup, Language type
 │   ├── i18next.d.ts      # Type-safe t() keys
 │   └── locales/          # uz.json, en.json, ru.json
 ├── pages/
 │   ├── home/             # Landing page (composes the sections)
-│   └── brief/            # Brief page
+│   ├── brief/            # Client brief page
+│   └── notFound/         # 404 page
 └── components/
     ├── brands/           # Client logo marquee
-    ├── contact/          # Contact details + Telegram form
+    ├── brief/            # Brief form
     ├── header/           # Navigation + language switcher
     ├── hero/             # Hero section
     ├── about/            # About me
@@ -136,10 +137,10 @@ Done:
 
 - [x] Header — sticky, with a mobile burger menu
 - [x] Hero section
-- [x] About section
+- [x] About section — copy fully translated (UZ / EN / RU)
 - [x] 3D tilt card effect
-- [x] UZ / EN / RU translations (core keys)
-- [x] Responsive layout for the sections that exist
+- [x] UZ / EN / RU translations
+- [x] Responsive layout
 - [x] Working navigation — smooth scroll to sections, and routing to `/brief`
 - [x] Language persists across reloads (`localStorage`, then browser language)
 - [x] Portfolio grid with category filters and a project modal
@@ -147,16 +148,18 @@ Done:
 - [x] Brands marquee
 - [x] Footer
 - [x] Contact section with a Telegram-backed form
+- [x] Brief (`/brief`) page — a Telegram-backed client brief form
+- [x] 404 page
+- [x] SEO and Open Graph meta tags, `robots.txt`, `sitemap.xml`
+- [x] Vercel SPA configuration (`vercel.json`)
 
-Not built yet:
+Before going live — content, not code:
 
-- [ ] Real project data (`src/data/projects.ts` currently holds placeholder examples)
+- [ ] Real project data (`src/data/projects.ts` still holds placeholder examples, and `public/projects/` is empty)
 - [ ] Real contact details (`src/data/contact.ts` holds placeholders)
-- [ ] Brief (`/brief`) page
-- [ ] Brands section (the logos in `public/brands/` are unused so far)
-- [ ] Resume/CV download (the button exists, the PDF does not)
-- [ ] Full translations — the About copy is still hardcoded Uzbek
-- [ ] 404 page and SEO meta tags
+- [ ] Resume/CV PDF — drop it in `public/` and set `resumeUrl` in `src/data/contact.ts`; until then the download button is hidden rather than dead
+- [ ] `public/og-cover.jpg` — a 1200×630 share image
+- [ ] Swap the placeholder domain in `index.html`, `public/robots.txt` and `public/sitemap.xml` for the real one
 
 ## Adding a portfolio project
 
@@ -177,6 +180,24 @@ Not built yet:
 ```
 
 No other file needs editing — the grid, the filters and the modal all read from this array. If `cover` is missing or the file cannot be loaded, a placeholder is shown instead, so the layout never breaks.
+
+## Deployment
+
+The site is a static SPA and is set up for **Vercel**.
+
+| Setting          | Value           |
+| ---------------- | --------------- |
+| Framework preset | Vite            |
+| Build command    | `npm run build` |
+| Output directory | `dist`          |
+
+[`vercel.json`](vercel.json) rewrites every unmatched path to `index.html`. Without
+that rewrite, opening or refreshing `/brief` directly would return the host's own
+404 and React Router would never run.
+
+Set `VITE_TELEGRAM_BOT_TOKEN` and `VITE_TELEGRAM_CHAT_ID` as environment variables
+in the Vercel project — both forms fail without them. They must be re-deployed to
+take effect, since `VITE_` values are baked into the bundle at build time.
 
 ## Notes
 

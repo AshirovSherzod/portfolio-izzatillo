@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal portfolio site for **Jamolitdinov Izzatillo**, a graphic designer (Graphic / Web UI-UX / Motion / 3D). Single-page marketing site with a dark neon-green aesthetic, plus a `/brief` page for client briefs (still a stub).
+Personal portfolio site for **Jamolitdinov Izzatillo**, a graphic designer (Graphic / Web UI-UX / Motion / 3D). Single-page marketing site with a dark neon-green aesthetic, plus a `/brief` page carrying a client brief form.
 
 Content is trilingual: Uzbek (default), English, Russian.
 
@@ -59,11 +59,15 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 `src/data/` holds everything that is content rather than code — [projects.ts](src/data/projects.ts), [services.ts](src/data/services.ts), [brands.ts](src/data/brands.ts) and [contact.ts](src/data/contact.ts). Copy that varies per project/service lives in the entry as a `Localized` object read through `pickLocalized`; only UI chrome (headings, filter labels, category names) goes in the locale files. Adding a project or a service stays a one-file change.
 
+`contact.ts` also exports `resumeUrl`, deliberately empty: About renders the resume download button only when it is set, so there is never a button with nothing behind it.
+
 **`contact.ts` currently holds placeholder values** — a fake email, phone and social URLs, marked with a TODO. Both the Footer and the Contact section render them today, so they must be replaced before the site is public.
 
-### Contact form
+### The two forms
 
-The form in [ContactForm.tsx](src/components/contact/ContactForm.tsx) posts straight to the Telegram Bot API from the browser via [src/lib/telegram.ts](src/lib/telegram.ts) — there is no backend. Credentials come from `VITE_TELEGRAM_BOT_TOKEN` / `VITE_TELEGRAM_CHAT_ID`, typed in [vite-env.d.ts](src/vite-env.d.ts).
+There are two: [ContactForm.tsx](src/components/contact/ContactForm.tsx) and [BriefForm.tsx](src/components/brief/BriefForm.tsx). Both post straight to the Telegram Bot API from the browser via [src/lib/telegram.ts](src/lib/telegram.ts) — there is no backend. They share field styling through [src/lib/formStyles.ts](src/lib/formStyles.ts) and both carry the same honeypot field.
+
+The brief's dropdown options live in [src/data/brief.ts](src/data/brief.ts) as `Localized` values, like every other content file. `buildMessage` composes the Telegram text with **Uzbek** labels regardless of the visitor's language — the message is read by the site owner, not the sender. Credentials come from `VITE_TELEGRAM_BOT_TOKEN` / `VITE_TELEGRAM_CHAT_ID`, typed in [vite-env.d.ts](src/vite-env.d.ts).
 
 `VITE_`-prefixed values are inlined into the bundle, so the token is public by construction. That was a deliberate trade-off for having no backend; the mitigation is a bot used for nothing else. Do not move other secrets into `VITE_` vars on the strength of this precedent.
 
@@ -91,7 +95,7 @@ The pattern is `lg`-only. Below `lg` the cards are uniform `aspect-4/3` tiles in
 
 ### Routing and scroll navigation
 
-[App.tsx](src/App.tsx) renders `ScrollManager`, `Header`, a `<Routes>` block (`/` → Home, `/brief` → Brief), then `Footer`. Home composes the page sections in order: Hero, About, Brands, Services, Portfolio, Contact. Brands is not in `SECTIONS` — it is a strip, not a nav target.
+[App.tsx](src/App.tsx) renders `ScrollManager`, `Header`, a `<Routes>` block (`/` → Home, `/brief` → Brief, `*` → NotFound), then `Footer`. Home composes the page sections in order: Hero, About, Brands, Services, Portfolio, Contact. Brands is not in `SECTIONS` — it is a strip, not a nav target.
 
 Header nav targets the on-page sections listed in [src/lib/sections.ts](src/lib/sections.ts) — that `SECTIONS` array is what the nav is generated from, and each id must match both a section `id` attribute and a translation key. Adding a section means touching the array, the component's `id`, and all three locale files.
 
@@ -101,16 +105,31 @@ Cross-page navigation ("Services" clicked while on `/brief`) works through a **m
 
 ## Current state
 
-Every section of the landing page is built. The only stub left is `pages/brief/Brief.tsx` — the whole `/brief` route, which the header and hero both link to.
+Every section of the landing page is built, `/brief` carries a working form, and
+there is a 404 route. The remaining gaps are **content, not code**.
 
-Known gaps, in case they come up:
+- **The projects in `src/data/projects.ts` are placeholder examples**, marked with a TODO, and `public/projects/` is empty — the whole grid currently renders placeholders.
+- **`src/data/contact.ts` holds a fake email, phone and social URLs**, also marked with a TODO. Footer and Contact both render them.
+- `resumeUrl` in that same file is empty, so the About download button is hidden. Setting it (with a PDF in `public/`) is all that is needed to bring it back.
+- `index.html`, `public/robots.txt` and `public/sitemap.xml` share a **placeholder domain** (`porfolio-izzatillo.vercel.app`). Change all three together when a real domain is attached.
+- `og:image` points at `/og-cover.jpg`, which does not exist yet — it needs a 1200×630 image.
 
-- **The projects in `src/data/projects.ts` are placeholder examples**, marked with a TODO. They must be replaced with real work before the site goes live.
+Smaller known gaps:
+
 - The brands marquee duplicates the list and translates the track by -50%, which only lines up because both copies are identical — keep them in sync if you touch `.marquee-group`. It also needs its own `prefers-reduced-motion` rule: the global one only shortens `animation-duration`, which freezes an infinite animation on its last frame instead of stopping it.
-- **No 404 route** and no SEO/Open Graph meta tags.
-- **About's copy is hardcoded Uzbek JSX**, so EN/RU visitors still read Uzbek there.
-- The Resume download button in About has no PDF behind it and no `onClick`.
 - `TiltCard` is mouse-only — no touch handlers, and `prefers-reduced-motion` is not honoured.
+
+## Deployment
+
+Static SPA, configured for Vercel. [vercel.json](vercel.json) rewrites every
+unmatched path to `index.html`; without it, loading or refreshing `/brief`
+directly returns the host's 404 and React Router never boots. It also sets a
+one-year immutable cache on `/assets/*`, which is safe because Vite content-hashes
+those filenames.
+
+`VITE_TELEGRAM_BOT_TOKEN` and `VITE_TELEGRAM_CHAT_ID` must be set as environment
+variables on the host, and a redeploy is required after changing them — `VITE_`
+values are baked in at build time, not read at runtime.
 
 ## Repo conventions
 
