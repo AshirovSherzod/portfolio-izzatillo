@@ -8,6 +8,15 @@ export const contact = {
   phone: "+998 90 000 00 00",
 } as const;
 
+/**
+ * Resume PDF'ga yo'l (`public/` ichidagi fayl, masalan "/resume.pdf").
+ * Bo'sh qoldirilsa About'dagi yuklab olish tugmasi umuman ko'rsatilmaydi —
+ * shuning uchun ishlamaydigan tugma hech qachon chiqmaydi.
+ *
+ * TODO: PDF tayyor bo'lgach, faylni `public/` ga tashlab shu yerga yozing.
+ */
+export const resumeUrl = "";
+
 export type Social = {
   id: string;
   label: string;
