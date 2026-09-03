@@ -1,15 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { sendToTelegram } from "../../lib/telegram";
+import { FIELD_CLASSES } from "../../lib/formStyles";
 
 type Status = "idle" | "sending" | "success" | "error";
 
 type Fields = { name: string; contact: string; message: string };
 
 const EMPTY: Fields = { name: "", contact: "", message: "" };
-
-const FIELD_CLASSES =
-  "w-full rounded-lg border border-white/[0.16] bg-ink/60 px-4 py-2.5 text-white placeholder:text-white/30 focus:border-neon/60 focus:outline-none";
 
 function ContactForm() {
   const { t } = useTranslation();

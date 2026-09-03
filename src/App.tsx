@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Footer from "./components/footer/Footer";
 import Home from "./pages/home/Home";
 import Brief from "./pages/brief/Brief";
+import NotFound from "./pages/notFound/NotFound";
 import Header from "./components/header/Header";
 import { consumePendingSection, scrollToSection } from "./lib/sections";
 
@@ -38,6 +39,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/brief" element={<Brief />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </>
