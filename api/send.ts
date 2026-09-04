@@ -10,10 +10,6 @@
  * Shuning uchun muhit o'zgaruvchilari `VITE_` prefiksisiz nomlanadi —
  * prefiks qo'shilsa, Vite ularni yana bundle ichiga qaytarib yozadi.
  */
-export const config = { runtime: "edge" };
-
-const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 /** Telegram bitta xabarda 4096 belgidan ortig'ini qabul qilmaydi */
 const MAX_LENGTH = 4096;
@@ -23,11 +19,26 @@ export default async function handler(request: Request): Promise<Response> {
     return json({ error: "Faqat POST" }, 405);
   }
 
-  if (!BOT_TOKEN || !CHAT_ID) {
-    console.error(
-      "TELEGRAM_BOT_TOKEN yoki TELEGRAM_CHAT_ID o'rnatilmagan — xabar yuborilmadi",
-    );
-    return json({ error: "Server sozlanmagan" }, 500);
+  /*
+   * Qiymatlar ataylab modul darajasida emas, shu yerda o'qiladi. Modul
+   * tanasi sovuq startda bir marta ishlaydi va ba'zi muhitlarda qiymatlar
+   * o'sha paytda "muzlab" qoladi — o'zgaruvchini keyin qo'shsangiz funksiya
+   * uni ko'rmay qolardi. Har so'rovda o'qish buni yo'q qiladi.
+   */
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+
+  const missing: string[] = [];
+  if (!botToken) missing.push("TELEGRAM_BOT_TOKEN");
+  if (!chatId) missing.push("TELEGRAM_CHAT_ID");
+
+  if (missing.length > 0) {
+    console.error("O'rnatilmagan muhit o'zgaruvchilari:", missing.join(", "));
+    /*
+     * Javobda faqat NOMLAR qaytadi, qiymatlar hech qachon emas — sozlashdagi
+     * xatoni panelga kirmasdan aniqlash uchun shu yetarli.
+     */
+    return json({ error: "Server sozlanmagan", missing }, 500);
   }
 
   let payload: { text?: unknown };
@@ -52,11 +63,11 @@ export default async function handler(request: Request): Promise<Response> {
    * kabi belgilar Telegram'ning HTML tahlilini buzib, yuborishni yiqitardi.
    */
   const response = await fetch(
-    `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+    `https://api.telegram.org/bot${botToken}/sendMessage`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: CHAT_ID, text }),
+      body: JSON.stringify({ chat_id: chatId, text }),
     },
   );
 
@@ -66,7 +77,11 @@ export default async function handler(request: Request): Promise<Response> {
      * o'z ichiga olishi mumkin — shuning uchun u faqat logga yoziladi,
      * mijozga esa umumiy xato qaytariladi.
      */
-    console.error("Telegram API xatosi:", response.status, await response.text());
+    console.error(
+      "Telegram API xatosi:",
+      response.status,
+      await response.text(),
+    );
     return json({ error: "Yuborib bo'lmadi" }, 502);
   }
 

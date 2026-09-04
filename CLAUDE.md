@@ -65,11 +65,13 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 ### The two forms
 
-There are two: [ContactForm.tsx](src/components/contact/ContactForm.tsx) and [BriefForm.tsx](src/components/brief/BriefForm.tsx). Both send through [src/lib/telegram.ts](src/lib/telegram.ts), which posts to [api/send.ts](api/send.ts) — a Vercel Edge function that forwards the text to the Telegram Bot API. They share field styling through [src/lib/formStyles.ts](src/lib/formStyles.ts) and both carry the same honeypot field.
+There are two: [ContactForm.tsx](src/components/contact/ContactForm.tsx) and [BriefForm.tsx](src/components/brief/BriefForm.tsx). Both send through [src/lib/telegram.ts](src/lib/telegram.ts), which posts to [api/send.ts](api/send.ts) — a Vercel serverless function that forwards the text to the Telegram Bot API. They share field styling through [src/lib/formStyles.ts](src/lib/formStyles.ts) and both carry the same honeypot field.
 
 The brief's dropdown options live in [src/data/brief.ts](src/data/brief.ts) as `Localized` values, like every other content file. `buildMessage` composes the Telegram text with **Uzbek** labels regardless of the visitor's language — the message is read by the site owner, not the sender. Credentials come from `VITE_TELEGRAM_BOT_TOKEN` / `VITE_TELEGRAM_CHAT_ID`, typed in [vite-env.d.ts](src/vite-env.d.ts).
 
 The credentials are `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`, deliberately **without** a `VITE_` prefix. An earlier version read them as `VITE_` values, which Vite inlines into the browser bundle — the token was readable in DevTools by anyone. Adding the prefix back would undo that fix, so never rename these.
+
+It reads its two variables inside the handler rather than at module scope: module bodies run once per cold start, and a value captured there can outlive a later change to it.
 
 The function returns a JSON body, and the client checks for `ok: true` rather than trusting the status code alone. Vite's dev server answers `/api/send` with `index.html` and a 200, so a status-only check reported success while sending nothing. Exercising the form locally needs `vercel dev`, not `npm run dev`.
 
@@ -130,8 +132,13 @@ one-year immutable cache on `/assets/*`, which is safe because Vite content-hash
 those filenames.
 
 `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` must be set as environment variables
-on the host. Unlike the `VITE_` values they replaced, these are read by the Edge
-function at request time, so changing one takes effect without a rebuild.
+on the host, for the Production environment, and **a redeploy is required after
+adding or changing one** — Vercel binds environment variables to a deployment
+when it is built, so an existing deployment never sees a newly added value.
+
+When the pair is missing, the function answers 500 with a `missing` array naming
+the absent variables (names only, never values), which is usually faster than
+opening the dashboard.
 
 The catch-all rewrite does not shadow `/api/send`: Vercel applies rewrites only
 after the filesystem and functions have been checked.

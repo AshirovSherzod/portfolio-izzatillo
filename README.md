@@ -39,7 +39,7 @@ The dev server usually starts at `http://localhost:5173`.
 ### The forms (optional)
 
 Both forms send their message to a Telegram bot through
-[`api/send.ts`](api/send.ts), a Vercel Edge function. Without configuration the
+[`api/send.ts`](api/send.ts), a Vercel serverless function. Without configuration the
 site still builds and runs — only submitting a form fails.
 
 ```bash
@@ -77,7 +77,7 @@ vercel dev
 
 ```
 api/
-└── send.ts               # Edge function: forwards form messages to Telegram
+└── send.ts               # Serverless function: forwards form messages to Telegram
 
 src/
 ├── main.tsx              # Entry point: React root, Router, i18n
@@ -210,8 +210,10 @@ that rewrite, opening or refreshing `/brief` directly would return the host's ow
 404 and React Router would never run.
 
 Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` as environment variables in the
-Vercel project — both forms fail without them. The Edge function reads them per
-request, so changing one does not need a rebuild.
+Vercel project, for the Production environment — both forms fail without them.
+**Redeploy after adding or changing either one**: Vercel binds environment
+variables to a deployment at build time, so a deployment that already exists
+will not pick up a new value.
 
 ## Notes
 
