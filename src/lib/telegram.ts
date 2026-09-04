@@ -1,37 +1,32 @@
-const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
-const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
-
 /**
- * Bot ma'lumotlari `.env` da berilganmi. Berilmagan bo'lsa forma
- * yuborishga urinmaydi — foydalanuvchiga xato ko'rsatadi.
+ * Formalar xabarni shu yerdan yuboradi.
+ *
+ * Xabar Telegram'ga to'g'ridan-to'g'ri emas, `api/send.ts` serverless
+ * funksiyasi orqali ketadi — bot tokeni faqat serverda turadi va brauzer
+ * bundle'iga umuman tushmaydi.
  */
-export const isTelegramConfigured = Boolean(BOT_TOKEN && CHAT_ID);
+const ENDPOINT = "/api/send";
 
-/**
- * Xabarni Telegram'ga yuboradi.
- *
- * Diqqat: token brauzerga tushadigan bundle ichida bo'ladi — buni yashirib
- * bo'lmaydi. Shuning uchun faqat shu sayt uchun ochilgan, boshqa hech
- * qayerda ishlatilmaydigan bot tokeni qo'yilishi kerak.
- *
- * `parse_mode` ataylab berilmagan: foydalanuvchi matnidagi `<` yoki `&`
- * kabi belgilar Telegram'ning HTML tahlilini buzib, yuborishni yiqitardi.
- */
 export async function sendToTelegram(text: string): Promise<void> {
-  if (!isTelegramConfigured) {
-    throw new Error("Telegram bot .env da sozlanmagan");
-  }
+  const response = await fetch(ENDPOINT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
 
-  const response = await fetch(
-    `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: CHAT_ID, text }),
-    },
-  );
+  /*
+   * Javob tanasi ham tekshiriladi, chunki maqomning o'zi yetarli emas:
+   * `npm run dev` da Vite serveri `/api/send` uchun index.html'ni 200 bilan
+   * qaytaradi va forma hech narsa yubormay turib "muvaffaqiyat" ko'rsatardi.
+   * HTML kelganda JSON tahlili yiqiladi va biz xatoni ko'ramiz.
+   *
+   * Funksiyani lokal sinash uchun `vercel dev` kerak — qarang README.
+   */
+  const data = (await response.json().catch(() => null)) as {
+    ok?: boolean;
+  } | null;
 
-  if (!response.ok) {
-    throw new Error(`Telegram API xatosi: ${response.status}`);
+  if (!response.ok || !data?.ok) {
+    throw new Error(`Xabar yuborilmadi: ${response.status}`);
   }
 }

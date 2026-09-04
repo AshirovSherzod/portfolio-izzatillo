@@ -36,20 +36,31 @@ npm run dev
 
 The dev server usually starts at `http://localhost:5173`.
 
-### Contact form (optional)
+### The forms (optional)
 
-The contact form posts to a Telegram bot. Without configuration the site
-still builds and runs — only submitting the form fails.
+Both forms send their message to a Telegram bot through
+[`api/send.ts`](api/send.ts), a Vercel Edge function. Without configuration the
+site still builds and runs — only submitting a form fails.
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in `VITE_TELEGRAM_BOT_TOKEN` (from @BotFather) and `VITE_TELEGRAM_CHAT_ID`
+Fill in `TELEGRAM_BOT_TOKEN` (from @BotFather) and `TELEGRAM_CHAT_ID`
 (from @userinfobot).
 
-> Anything prefixed `VITE_` is inlined into the browser bundle, so this token
-> is **not** secret. Use a bot created solely for this site and nothing else.
+> Note the names carry **no** `VITE_` prefix. That is deliberate: Vite inlines
+> `VITE_`-prefixed values into the browser bundle, which would put the bot token
+> in front of every visitor. These are read by the function on the server.
+
+`npm run dev` serves the front end only — it has no `/api` route, so submitting
+a form fails against it. To exercise the forms locally, run the Vercel CLI
+instead, which serves the function alongside the site:
+
+```bash
+npm i -g vercel
+vercel dev
+```
 
 ### Scripts
 
@@ -65,6 +76,9 @@ Fill in `VITE_TELEGRAM_BOT_TOKEN` (from @BotFather) and `VITE_TELEGRAM_CHAT_ID`
 ## Project structure
 
 ```
+api/
+└── send.ts               # Edge function: forwards form messages to Telegram
+
 src/
 ├── main.tsx              # Entry point: React root, Router, i18n
 ├── App.tsx               # Header + Routes + Footer
@@ -195,9 +209,9 @@ The site is a static SPA and is set up for **Vercel**.
 that rewrite, opening or refreshing `/brief` directly would return the host's own
 404 and React Router would never run.
 
-Set `VITE_TELEGRAM_BOT_TOKEN` and `VITE_TELEGRAM_CHAT_ID` as environment variables
-in the Vercel project — both forms fail without them. They must be re-deployed to
-take effect, since `VITE_` values are baked into the bundle at build time.
+Set `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` as environment variables in the
+Vercel project — both forms fail without them. The Edge function reads them per
+request, so changing one does not need a rebuild.
 
 ## Notes
 

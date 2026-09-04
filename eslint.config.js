@@ -20,4 +20,11 @@ export default tseslint.config([
       globals: globals.browser,
     },
   },
+  {
+    // api/ serverda ishlaydi — brauzer emas, Node globallari kerak
+    files: ["api/**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 ]);

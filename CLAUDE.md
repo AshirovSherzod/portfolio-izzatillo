@@ -65,13 +65,15 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 ### The two forms
 
-There are two: [ContactForm.tsx](src/components/contact/ContactForm.tsx) and [BriefForm.tsx](src/components/brief/BriefForm.tsx). Both post straight to the Telegram Bot API from the browser via [src/lib/telegram.ts](src/lib/telegram.ts) — there is no backend. They share field styling through [src/lib/formStyles.ts](src/lib/formStyles.ts) and both carry the same honeypot field.
+There are two: [ContactForm.tsx](src/components/contact/ContactForm.tsx) and [BriefForm.tsx](src/components/brief/BriefForm.tsx). Both send through [src/lib/telegram.ts](src/lib/telegram.ts), which posts to [api/send.ts](api/send.ts) — a Vercel Edge function that forwards the text to the Telegram Bot API. They share field styling through [src/lib/formStyles.ts](src/lib/formStyles.ts) and both carry the same honeypot field.
 
 The brief's dropdown options live in [src/data/brief.ts](src/data/brief.ts) as `Localized` values, like every other content file. `buildMessage` composes the Telegram text with **Uzbek** labels regardless of the visitor's language — the message is read by the site owner, not the sender. Credentials come from `VITE_TELEGRAM_BOT_TOKEN` / `VITE_TELEGRAM_CHAT_ID`, typed in [vite-env.d.ts](src/vite-env.d.ts).
 
-`VITE_`-prefixed values are inlined into the bundle, so the token is public by construction. That was a deliberate trade-off for having no backend; the mitigation is a bot used for nothing else. Do not move other secrets into `VITE_` vars on the strength of this precedent.
+The credentials are `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`, deliberately **without** a `VITE_` prefix. An earlier version read them as `VITE_` values, which Vite inlines into the browser bundle — the token was readable in DevTools by anyone. Adding the prefix back would undo that fix, so never rename these.
 
-`isTelegramConfigured` gates the send, so a missing `.env` surfaces as a form error rather than a crash and the site still builds. `sendMessage` is called **without** `parse_mode`: user text containing `<` or `&` would otherwise break Telegram's HTML parsing and fail the request.
+The function returns a JSON body, and the client checks for `ok: true` rather than trusting the status code alone. Vite's dev server answers `/api/send` with `index.html` and a 200, so a status-only check reported success while sending nothing. Exercising the form locally needs `vercel dev`, not `npm run dev`.
+
+`sendMessage` is called **without** `parse_mode`: user text containing `<` or `&` would otherwise break Telegram's HTML parsing and fail the request. A Telegram error response is logged server-side only — its body can echo the request URL, and the token with it.
 
 ### Portfolio data
 
@@ -127,9 +129,17 @@ directly returns the host's 404 and React Router never boots. It also sets a
 one-year immutable cache on `/assets/*`, which is safe because Vite content-hashes
 those filenames.
 
-`VITE_TELEGRAM_BOT_TOKEN` and `VITE_TELEGRAM_CHAT_ID` must be set as environment
-variables on the host, and a redeploy is required after changing them — `VITE_`
-values are baked in at build time, not read at runtime.
+`TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` must be set as environment variables
+on the host. Unlike the `VITE_` values they replaced, these are read by the Edge
+function at request time, so changing one takes effect without a rebuild.
+
+The catch-all rewrite does not shadow `/api/send`: Vercel applies rewrites only
+after the filesystem and functions have been checked.
+
+`tsc -b` covers three project references: `tsconfig.app.json` for `src`,
+`tsconfig.node.json` for the Vite config, and `tsconfig.api.json` for `api` —
+the last one carries Node types rather than the browser's, since that code runs
+on the server. A type error in `api/` fails `npm run build` like any other.
 
 ## Repo conventions
 
