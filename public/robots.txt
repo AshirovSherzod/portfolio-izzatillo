@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://portfolio-izzatillo.vercel.app/sitemap.xml
+Sitemap: https://jamolitdinov.uz/sitemap.xml

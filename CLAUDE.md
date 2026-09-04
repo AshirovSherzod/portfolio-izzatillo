@@ -115,7 +115,7 @@ there is a 404 route. The remaining gaps are **content, not code**.
 - **The projects in `src/data/projects.ts` are placeholder examples**, marked with a TODO, and `public/projects/` is empty — the whole grid currently renders placeholders.
 - **`src/data/contact.ts` holds a fake email, phone and social URLs**, also marked with a TODO. Footer and Contact both render them.
 - `resumeUrl` in that same file is empty, so the About download button is hidden. Setting it (with a PDF in `public/`) is all that is needed to bring it back.
-- `index.html`, `public/robots.txt` and `public/sitemap.xml` share a **placeholder domain** (`portfolio-izzatillo.vercel.app`). Change all three together when a real domain is attached.
+- `index.html`, `public/robots.txt` and `public/sitemap.xml` all name `https://jamolitdinov.uz`, without `www` — `www.jamolitdinov.uz` redirects to it. Those three have to agree; a canonical that disagrees with the sitemap tells search engines two different things. Change them together.
 - `og:image` points at `/og-cover.jpg`, which does not exist yet — it needs a 1200×630 image.
 
 Smaller known gaps:
