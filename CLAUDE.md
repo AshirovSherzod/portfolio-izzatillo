@@ -65,13 +65,13 @@ It is mouse-only; there are no touch handlers, so the effect is inert on mobile.
 
 ### The two forms
 
-There are two: [ContactForm.tsx](src/components/contact/ContactForm.tsx) and [BriefForm.tsx](src/components/brief/BriefForm.tsx). Both send through [src/lib/telegram.ts](src/lib/telegram.ts), which posts to [api/send.ts](api/send.ts) — a Vercel serverless function that forwards the text to the Telegram Bot API. They share field styling through [src/lib/formStyles.ts](src/lib/formStyles.ts) and both carry the same honeypot field.
+There are two: [ContactForm.tsx](src/components/contact/ContactForm.tsx) and [BriefForm.tsx](src/components/brief/BriefForm.tsx). Both send through [src/lib/telegram.ts](src/lib/telegram.ts), which posts to [api/send.ts](api/send.ts) — a Vercel Edge function that forwards the text to the Telegram Bot API. They share field styling through [src/lib/formStyles.ts](src/lib/formStyles.ts) and both carry the same honeypot field.
 
 The brief's dropdown options live in [src/data/brief.ts](src/data/brief.ts) as `Localized` values, like every other content file. `buildMessage` composes the Telegram text with **Uzbek** labels regardless of the visitor's language — the message is read by the site owner, not the sender. Credentials come from `VITE_TELEGRAM_BOT_TOKEN` / `VITE_TELEGRAM_CHAT_ID`, typed in [vite-env.d.ts](src/vite-env.d.ts).
 
 The credentials are `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`, deliberately **without** a `VITE_` prefix. An earlier version read them as `VITE_` values, which Vite inlines into the browser bundle — the token was readable in DevTools by anyone. Adding the prefix back would undo that fix, so never rename these.
 
-It reads its two variables inside the handler rather than at module scope: module bodies run once per cold start, and a value captured there can outlive a later change to it.
+It declares `runtime: "edge"`, and that export is load-bearing: without it Vercel treats the file as a Node `(req, res)` handler, the returned `Response` is ignored, nothing ends the response and every request hangs until it times out.
 
 The function returns a JSON body, and the client checks for `ok: true` rather than trusting the status code alone. Vite's dev server answers `/api/send` with `index.html` and a 200, so a status-only check reported success while sending nothing. Exercising the form locally needs `vercel dev`, not `npm run dev`.
 

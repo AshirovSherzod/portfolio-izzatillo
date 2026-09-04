@@ -39,7 +39,7 @@ The dev server usually starts at `http://localhost:5173`.
 ### The forms (optional)
 
 Both forms send their message to a Telegram bot through
-[`api/send.ts`](api/send.ts), a Vercel serverless function. Without configuration the
+[`api/send.ts`](api/send.ts), a Vercel Edge function. Without configuration the
 site still builds and runs — only submitting a form fails.
 
 ```bash
@@ -77,7 +77,7 @@ vercel dev
 
 ```
 api/
-└── send.ts               # Serverless function: forwards form messages to Telegram
+└── send.ts               # Edge function: forwards form messages to Telegram
 
 src/
 ├── main.tsx              # Entry point: React root, Router, i18n

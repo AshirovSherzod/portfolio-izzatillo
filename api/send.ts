@@ -11,6 +11,13 @@
  * prefiks qo'shilsa, Vite ularni yana bundle ichiga qaytarib yozadi.
  */
 
+/*
+ * Bu sozlama KERAK — olib tashlanmasin. Usiz Vercel funksiyani Node'ning
+ * `(req, res)` imzosi deb hisoblaydi, quyidagi handler esa `Response`
+ * qaytaradi: javobni hech kim yopmaydi va so'rov timeout'gacha osilib qoladi.
+ */
+export const config = { runtime: "edge" };
+
 /** Telegram bitta xabarda 4096 belgidan ortig'ini qabul qilmaydi */
 const MAX_LENGTH = 4096;
 
@@ -20,10 +27,9 @@ export default async function handler(request: Request): Promise<Response> {
   }
 
   /*
-   * Qiymatlar ataylab modul darajasida emas, shu yerda o'qiladi. Modul
-   * tanasi sovuq startda bir marta ishlaydi va ba'zi muhitlarda qiymatlar
-   * o'sha paytda "muzlab" qoladi — o'zgaruvchini keyin qo'shsangiz funksiya
-   * uni ko'rmay qolardi. Har so'rovda o'qish buni yo'q qiladi.
+   * Edge muhitida Vercel `process.env.X` murojaatlarini build paytida
+   * qiymatga almashtiradi. Ya'ni o'zgaruvchi qo'shilgandan keyin QAYTA
+   * DEPLOY shart — mavjud deploy yangi qiymatni hech qachon ko'rmaydi.
    */
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
