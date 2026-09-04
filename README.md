@@ -28,7 +28,7 @@ Requirements: **Node.js 20+** and **npm**.
 
 ```bash
 git clone <repo-url>
-cd porfolio-izzatillo
+cd portfolio-izzatillo
 
 npm install
 npm run dev
