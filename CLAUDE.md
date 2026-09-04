@@ -116,7 +116,7 @@ there is a 404 route. The remaining gaps are **content, not code**.
 
 Smaller known gaps:
 
-- The brands marquee duplicates the list and translates the track by -50%, which only lines up because both copies are identical — keep them in sync if you touch `.marquee-group`. It also needs its own `prefers-reduced-motion` rule: the global one only shortens `animation-duration`, which freezes an infinite animation on its last frame instead of stopping it.
+- The brands marquee duplicates the list and translates the track by -50%, which only lines up because both copies are identical — keep them in sync if you touch `.marquee-group`. It carries its own `prefers-reduced-motion` rule setting `animation: none`, because the global guard only shortens `animation-duration`, which would freeze an infinite animation on its last frame instead of stopping it.
 - `TiltCard` is mouse-only — no touch handlers, and `prefers-reduced-motion` is not honoured.
 
 ## Deployment
